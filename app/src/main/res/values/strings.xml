@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Chef InProgress</string>
+    <string name="title_home">Home</string>
+    <string name="title_inventory">Inventory</string>
+    <string name="title_add">Add</string>
+    <string name="title_favorite">Favorite</string>
+    <string name="title_profile">Profile</string>
+</resources>
