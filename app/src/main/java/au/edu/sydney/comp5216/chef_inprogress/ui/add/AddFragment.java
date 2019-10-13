@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
 
+import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryItem;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryItemAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.R;
@@ -26,6 +27,8 @@ public class AddFragment extends Fragment {
     private AddViewModel addViewModel;
     private ArrayList<InventoryItem> inventoryList;
     private ArrayAdapter<InventoryItem> itemsAdapter;
+
+    private InventoryDBHelper inventoryDBHelper;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -50,18 +53,28 @@ public class AddFragment extends Fragment {
             }
         });
 
-        inventoryList = new ArrayList<>();
+        inventoryDBHelper = new InventoryDBHelper(getContext());
 
-        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+        inventoryList = new ArrayList<>();
+        inventoryList = inventoryDBHelper.getAllData();
+
+
+//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//
+//        inventoryDBHelper.insertData("Apple", "Fruit", R.drawable.apple);
+//        inventoryDBHelper.insertData("Fish","Meat",R.drawable.fish);
+
+
+
+//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
 
         // Initialize the custom adapter and connect listView with adapter
         itemsAdapter = new InventoryItemAdapter(getContext(), inventoryList);
