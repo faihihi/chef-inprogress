@@ -6,4 +6,10 @@
         android:title="delete"
         android:icon="@drawable/ic_delete_black_24dp"
         />
+
+    <item
+        android:id="@+id/action_save"
+        android:title="save"
+        android:icon="@drawable/ic_save_black_24dp"
+        />
 </menu>

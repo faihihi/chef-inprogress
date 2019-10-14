@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -80,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
             // Do first run stuff here then set 'firstrun' as false
 
             // Save all the inventory items to database
-            inventoryDBHelper.insertData("Apple", "fruitveg", R.drawable.apple);
-            inventoryDBHelper.insertData("Carrot", "fruitveg", R.drawable.carrot);
-            inventoryDBHelper.insertData("Fish","meat",R.drawable.fish);
-            inventoryDBHelper.insertData("Cheese","grocery",R.drawable.cheese);
+            inventoryDBHelper.insertData("Apple", "fruitveg", R.drawable.apple, 0);
+            inventoryDBHelper.insertData("Carrot", "fruitveg", R.drawable.carrot, 0);
+            inventoryDBHelper.insertData("Fish","meat",R.drawable.fish,0);
+            inventoryDBHelper.insertData("Cheese","grocery",R.drawable.cheese,0);
 
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).commit();

@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
+import au.edu.sydney.comp5216.chef_inprogress.GlobalVariables;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryItem;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryItemAdapter;
@@ -25,6 +26,8 @@ import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ShoppingListFragment_
 import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ViewPagerAdapter;
 
 public class AddFragment extends Fragment {
+    CategoryPagerAdapter categoryPagerAdapter;
+
     private ArrayList<InventoryItem> inventoryList;
     private ArrayAdapter<InventoryItem> itemsAdapter;
 
@@ -38,10 +41,6 @@ public class AddFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_add, container, false);
 
-//        inventoryDBHelper = new InventoryDBHelper(getContext());
-//
-////        inventoryList = new ArrayList<>();
-////        inventoryList = inventoryDBHelper.getAllData();
 
         viewPager = root.findViewById(R.id.addViewPager);
         setupViewPager(viewPager);
@@ -52,29 +51,32 @@ public class AddFragment extends Fragment {
         return root;
     }
 
-    private void setupViewPager(ViewPager viewPager){
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getFragmentManager());
-        adapter = new ViewPagerAdapter(getChildFragmentManager());
+    public void setupViewPager(ViewPager viewPager){
+        categoryPagerAdapter = new CategoryPagerAdapter(getFragmentManager());
+        categoryPagerAdapter = new CategoryPagerAdapter(getChildFragmentManager());
 
         Bundle args = new Bundle();
         args.putString("category", "meat");
         GridFragment f = new GridFragment();
         f.setArguments(args);
-        adapter.addFragment(f,"MEAT");
+        categoryPagerAdapter.addFragment(f,"MEAT", 0);
 
 
         args = new Bundle();
         args.putString("category", "fruitveg");
         f = new GridFragment();
         f.setArguments(args);
-        adapter.addFragment(f,"FRUITS & VEG");
+        categoryPagerAdapter.addFragment(f,"FRUITS & VEG", 1);
 
         args = new Bundle();
         args.putString("category", "grocery");
         f = new GridFragment();
         f.setArguments(args);
-        adapter.addFragment(f,"GROCERY");
+        categoryPagerAdapter.addFragment(f,"GROCERY", 2);
 
-        viewPager.setAdapter(adapter);
+        ((GlobalVariables) getActivity().getApplication()).setViewPagerAdapter(categoryPagerAdapter);
+        ((GlobalVariables) getActivity().getApplication()).setCurrentCategory(-1);
+        viewPager.setAdapter(categoryPagerAdapter);
     }
+
 }
