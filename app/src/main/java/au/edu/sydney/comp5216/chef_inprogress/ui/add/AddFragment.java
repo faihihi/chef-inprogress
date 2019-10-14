@@ -6,14 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
@@ -21,66 +20,61 @@ import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryItem;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryItemAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.R;
+import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.InventoryFragment_lv2;
+import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ShoppingListFragment_lv2;
+import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ViewPagerAdapter;
 
 public class AddFragment extends Fragment {
-
-    private AddViewModel addViewModel;
     private ArrayList<InventoryItem> inventoryList;
     private ArrayAdapter<InventoryItem> itemsAdapter;
+
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     private InventoryDBHelper inventoryDBHelper;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        addViewModel =
-                ViewModelProviders.of(this).get(AddViewModel.class);
+
         View root = inflater.inflate(R.layout.fragment_add, container, false);
 
-        final TextView textView = root.findViewById(R.id.text_add);
-        final TextView itemView = root.findViewById(R.id.item);
-
-        addViewModel.getText().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
-
-        addViewModel.getInventoryList().observe(this, new Observer() {
-            @Override
-            public void onChanged(Object inventoryList) {
-
-            }
-        });
-
-        inventoryDBHelper = new InventoryDBHelper(getContext());
-
-        inventoryList = new ArrayList<>();
-        inventoryList = inventoryDBHelper.getAllData();
-
-
-//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//        inventoryDBHelper = new InventoryDBHelper(getContext());
 //
-//        inventoryDBHelper.insertData("Apple", "Fruit", R.drawable.apple);
-//        inventoryDBHelper.insertData("Fish","Meat",R.drawable.fish);
+////        inventoryList = new ArrayList<>();
+////        inventoryList = inventoryDBHelper.getAllData();
 
+        viewPager = root.findViewById(R.id.addViewPager);
+        setupViewPager(viewPager);
 
-
-//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-
-        // Initialize the custom adapter and connect listView with adapter
-        itemsAdapter = new InventoryItemAdapter(getContext(), inventoryList);
-        GridView gridView = (GridView) root.findViewById(R.id.inventoryGridView);
-        gridView.setAdapter(itemsAdapter);
+        tabLayout = root.findViewById(R.id.addTabs);
+        tabLayout.setupWithViewPager(viewPager);
 
         return root;
+    }
+
+    private void setupViewPager(ViewPager viewPager){
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getFragmentManager());
+        adapter = new ViewPagerAdapter(getChildFragmentManager());
+
+        Bundle args = new Bundle();
+        args.putString("category", "meat");
+        GridFragment f = new GridFragment();
+        f.setArguments(args);
+        adapter.addFragment(f,"MEAT");
+
+
+        args = new Bundle();
+        args.putString("category", "fruitveg");
+        f = new GridFragment();
+        f.setArguments(args);
+        adapter.addFragment(f,"FRUITS & VEG");
+
+        args = new Bundle();
+        args.putString("category", "grocery");
+        f = new GridFragment();
+        f.setArguments(args);
+        adapter.addFragment(f,"GROCERY");
+
+        viewPager.setAdapter(adapter);
     }
 }
