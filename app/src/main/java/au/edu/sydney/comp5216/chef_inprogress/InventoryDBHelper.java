@@ -65,8 +65,8 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
      * to retrieve all the data
      * @return
      */
-    public ArrayList<InventoryItem> getAllData(){
-        ArrayList<InventoryItem> arrayList = new ArrayList<>();
+    public ArrayList<Inventory> getAllData(){
+        ArrayList<Inventory> arrayList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM inventoryItem",null);
 
@@ -77,7 +77,7 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
             int icon = cursor.getInt(3);
             int userInventory = cursor.getInt(4);
 
-            InventoryItem item = new InventoryItem(id, itemName, category, icon, userInventory);
+            Inventory item = new Inventory(id, itemName, category, icon, userInventory);
 
             arrayList.add(item);
         }
@@ -101,8 +101,8 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
         db.update("inventoryItem", contentValues, "ID="+id, null);
     }
 
-    public ArrayList<InventoryItem> getItemsNotInUserInventory(){
-        ArrayList<InventoryItem> arrayList = new ArrayList<>();
+    public ArrayList<Inventory> getItemsNotInUserInventory(){
+        ArrayList<Inventory> arrayList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM inventoryItem",null);
 
@@ -114,7 +114,7 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
             int userInventory = cursor.getInt(4);
 
             if(userInventory == 0){
-                InventoryItem item = new InventoryItem(id, itemName, category, icon, userInventory);
+                Inventory item = new Inventory(id, itemName, category, icon, userInventory);
                 arrayList.add(item);
             }
         }
@@ -123,8 +123,8 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<InventoryItem> getItemsInUserInventory(){
-        ArrayList<InventoryItem> arrayList = new ArrayList<>();
+    public ArrayList<Inventory> getItemsInUserInventory(){
+        ArrayList<Inventory> arrayList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM inventoryItem",null);
 
@@ -136,7 +136,7 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
             int userInventory = cursor.getInt(4);
 
             if(userInventory == 1){
-                InventoryItem item = new InventoryItem(id, itemName, category, icon, userInventory);
+                Inventory item = new Inventory(id, itemName, category, icon, userInventory);
                 arrayList.add(item);
             }
         }

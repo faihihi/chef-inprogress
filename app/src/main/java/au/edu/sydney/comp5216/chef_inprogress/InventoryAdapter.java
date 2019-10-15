@@ -1,48 +1,68 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
-public class InventoryItemAdapter extends ArrayAdapter<Inventory> implements Filterable {
+public class InventoryAdapter extends BaseAdapter implements Filterable {
+
     ArrayList<Inventory> inventory;
     ArrayList<Inventory> filterList;
     CustomFilter filter;
 
     private Context context;
 
-
-    public InventoryItemAdapter(Context context, ArrayList<Inventory> items) {
-        super(context, 0, items);
+    public InventoryAdapter(Context context, ArrayList<Inventory> items) {
         this.context = context;
         this.inventory = items;
         this.filterList = inventory;
     }
 
-    /**
-     * Get view using Item object
-     * @param convertView
-     * @param parent
-     * @param position
-     */
+    @Override
+    public int getCount() {
+        try {
+            int size = inventory.size();
+            return size;
+        }catch (NullPointerException ex) {
+            return 0;
+        }
+    }
+
+    @Override
+    public Inventory getItem(int i) {
+        return inventory.get(i);
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return 0;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
         Inventory item = getItem(position);
 
         // Check if an existing view is being reused, otherwise inflate the view
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.inventory_list, parent, false);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if(convertView == null){
+            convertView = inflater.inflate(R.layout.inventory_list, null);
         }
 
         // Lookup view for data population
@@ -100,6 +120,5 @@ public class InventoryItemAdapter extends ArrayAdapter<Inventory> implements Fil
             notifyDataSetChanged();
         }
     }
-
 
 }

@@ -1,7 +1,5 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.inventory;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ActionMode;
@@ -10,29 +8,38 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.muddzdev.styleabletoast.StyleableToast;
 
 import java.util.ArrayList;
 
+import au.edu.sydney.comp5216.chef_inprogress.Inventory;
+import au.edu.sydney.comp5216.chef_inprogress.InventoryAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
-import au.edu.sydney.comp5216.chef_inprogress.InventoryItem;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryItemAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.R;
+import au.edu.sydney.comp5216.chef_inprogress.ui.add.GridFragment;
 
 public class InventoryFragment_lv2 extends Fragment {
-    ArrayList<InventoryItem> userInventoryList = new ArrayList<>();
-    ArrayAdapter<InventoryItem> userItemsAdapter;
+    ArrayList<Inventory> userInventoryList = new ArrayList<>();
+    private InventoryAdapter userItemsAdapter;
+
+    private MultiChoiceModeListener myModeListener;
+    private ActionMode currentMode;
 
     GridView gridView;
+    private FloatingActionButton save_fab, close_fab;
+    private SearchView search_bar;
 
     private InventoryDBHelper inventoryDBHelper;
     private ArrayList<Integer> selectedPositions, selectedAdapterPositions;
@@ -46,15 +53,72 @@ public class InventoryFragment_lv2 extends Fragment {
         userInventoryList = inventoryDBHelper.getItemsInUserInventory();
 
         // Initialize the custom adapter and connect listView with adapter
-        userItemsAdapter = new InventoryItemAdapter(getContext(), userInventoryList);
+        userItemsAdapter = new InventoryAdapter(getContext(), userInventoryList);
         gridView = (GridView) view.findViewById(R.id.inventoryGridView);
         gridView.setAdapter(userItemsAdapter);
 
         gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
-        gridView.setMultiChoiceModeListener(new MultiChoiceModeListener());
+        myModeListener = new MultiChoiceModeListener();
+        gridView.setMultiChoiceModeListener(myModeListener);
 
         selectedPositions = new ArrayList<>();
         selectedAdapterPositions = new ArrayList<>();
+
+        save_fab = (FloatingActionButton) view.findViewById(R.id.save_fab);
+        close_fab = (FloatingActionButton) view.findViewById(R.id.close_fab);
+
+        save_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                StyleableToast.makeText(getContext(), "Remove from Inventory", Toast.LENGTH_SHORT).show();
+
+                int count = 0;
+                for(Integer position: selectedAdapterPositions){
+                    position = position - count;
+                    if(position < 0){
+                        position = 0;
+                    }
+                    userInventoryList.remove(userInventoryList.get(position));
+                    userItemsAdapter.notifyDataSetChanged();
+                    count++;
+                }
+
+                for (Integer position : selectedPositions) {
+                    inventoryDBHelper.removeFromUserInventory(position);
+                }
+
+                for (int i = 0; i < gridView.getChildCount(); i++) {
+                    ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.grid_selector);
+                    iv.setVisibility(View.INVISIBLE);
+                }
+
+                myModeListener.onDestroyActionMode(currentMode);
+            }
+        });
+
+        close_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myModeListener.onDestroyActionMode(currentMode);
+            }
+        });
+
+
+        search_bar = (SearchView) view.findViewById(R.id.searchView);
+        search_bar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                ((InventoryAdapter) gridView.getAdapter()).getFilter().filter(query);
+                userItemsAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
 
         return view;
     }
@@ -62,53 +126,36 @@ public class InventoryFragment_lv2 extends Fragment {
     //multi select mode codes
     private class MultiChoiceModeListener implements GridView.MultiChoiceModeListener {
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.setTitle("Select Items");
+            mode.setTitle("Remove Ingredients");
             mode.setSubtitle("1 item selected");
-            mode.getMenuInflater().inflate(R.menu.context_menu, menu);
+
+            save_fab.setVisibility(View.VISIBLE);
+            close_fab.setVisibility(View.VISIBLE);
+
+            currentMode = mode;
             return true;
         }
 
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            currentMode = mode;
             return true;
         }
 
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-
-            switch (item.getItemId()){
-                case R.id.action_save:
-                    Toast.makeText(getContext(), "Deleted item(s) from Inventory",Toast.LENGTH_SHORT).show();
-                    for(Integer position: selectedPositions){
-                        inventoryDBHelper.removeFromUserInventory(position);
-                    }
-
-                    int count = 0;
-                    for(Integer position: selectedAdapterPositions){
-                        position = position - count;
-                        if(position < 0){
-                            position = 0;
-                        }
-                        userItemsAdapter.remove(userInventoryList.get(position));
-                        count++;
-                        userItemsAdapter.notifyDataSetChanged();
-                    }
-
-                    for(int i=0;i<gridView.getChildCount();i++){
-                        ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.remove_selector);
-                        iv.setVisibility(View.INVISIBLE);
-                    }
-                    mode.finish();
-
-                    break;
-                case R.id.action_delete:
-                    break;
-                default:
-                    break;
-            }
-
             return true;
         }
 
         public void onDestroyActionMode(ActionMode mode) {
+            for (int i = 0; i < gridView.getChildCount(); i++) {
+                ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.remove_selector);
+                iv.setVisibility(View.INVISIBLE);
+            }
+
+            save_fab.setVisibility(View.INVISIBLE);
+            close_fab.setVisibility(View.INVISIBLE);
+            selectedAdapterPositions = new ArrayList<>();
+            currentMode = mode;
+            mode.finish();
         }
 
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
@@ -143,6 +190,7 @@ public class InventoryFragment_lv2 extends Fragment {
                 ImageView iv = (ImageView) gridView.getChildAt(position).findViewById(R.id.remove_selector);
                 iv.setVisibility(View.INVISIBLE);
             }
+            currentMode = mode;
         }
     }
 }

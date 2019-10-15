@@ -1,20 +1,20 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
-public class InventoryItem {
+public class Inventory {
     private int id;
     private String itemName;
     private String category;
     private int icon;
     private int userInventory; // 1 true, 0 false
 
-    public InventoryItem(String itemName, String category, int icon){
+    public Inventory(String itemName, String category, int icon){
         this.itemName = itemName;
         this.category = category;
         this.icon = icon;
         this.userInventory = 0;
     }
 
-    public InventoryItem(int id, String itemName, String category, int icon, int userInventory){
+    public Inventory(int id, String itemName, String category, int icon, int userInventory){
         this.id = id;
         this.itemName = itemName;
         this.category = category;

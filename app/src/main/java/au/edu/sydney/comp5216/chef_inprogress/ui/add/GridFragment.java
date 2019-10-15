@@ -1,60 +1,50 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.add;
 
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 import com.muddzdev.styleabletoast.StyleableToast;
 
 import java.util.ArrayList;
 
 import au.edu.sydney.comp5216.chef_inprogress.GlobalVariables;
+import au.edu.sydney.comp5216.chef_inprogress.Inventory;
+import au.edu.sydney.comp5216.chef_inprogress.InventoryAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
-import au.edu.sydney.comp5216.chef_inprogress.InventoryItem;
-import au.edu.sydney.comp5216.chef_inprogress.InventoryItemAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.R;
-import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ViewPagerAdapter;
 
 public class GridFragment extends Fragment {
     CategoryPagerAdapter categoryPagerAdapter;
     private MultiChoiceModeListener myModeListener;
     private ActionMode currentMode;
 
-    private ArrayList<InventoryItem> inventoryList, displayList;
-    private ArrayAdapter<InventoryItem> itemsAdapter;
+    private ArrayList<Inventory> inventoryList, displayList;
+    private InventoryAdapter itemsAdapter;
     private InventoryDBHelper inventoryDBHelper;
     private ArrayList<Integer> selectedPositions, selectedAdapterPositions;
 
     private GridView gridView;
     private FloatingActionButton save_fab, close_fab;
+    private SearchView search_bar;
 
     private boolean firstOpen = false;
     private String category;
@@ -84,11 +74,9 @@ public class GridFragment extends Fragment {
 
         setDisplayList(category);
 
-
         // Initialize the custom adapter and connect listView with adapter
-        itemsAdapter = new InventoryItemAdapter(getContext(), displayList);
+        itemsAdapter = new InventoryAdapter(getContext(), displayList);
         gridView = (GridView) view.findViewById(R.id.inventoryGridView);
-
 
         gridView.setAdapter(itemsAdapter);
         gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -104,21 +92,26 @@ public class GridFragment extends Fragment {
 
                 StyleableToast.makeText(getContext(), "Saved items to Inventory", Toast.LENGTH_SHORT).show();
 
-
-                for (Integer position : selectedPositions) {
-                    inventoryDBHelper.saveToUserInventory(position);
-                }
-
                 int count = 0;
                 for(Integer position: selectedAdapterPositions){
                     position = position - count;
                     if(position < 0){
                         position = 0;
                     }
-                    itemsAdapter.remove(displayList.get(position));
-                    count++;
+
+                    Log.d("Check displayList", displayList.get(position).getItemName());
+                    displayList.remove(displayList.get(position));
                     itemsAdapter.notifyDataSetChanged();
+                    count++;
+
                 }
+
+                for (Integer position : selectedPositions) {
+
+                    inventoryDBHelper.saveToUserInventory(position);
+                }
+
+
 
                 for (int i = 0; i < gridView.getChildCount(); i++) {
                     ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.grid_selector);
@@ -134,6 +127,22 @@ public class GridFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 myModeListener.onDestroyActionMode(currentMode);
+            }
+        });
+
+
+        search_bar = (SearchView) view.findViewById(R.id.searchView);
+        search_bar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                ((InventoryAdapter) gridView.getAdapter()).getFilter().filter(query);
+                itemsAdapter.notifyDataSetChanged();
+                return false;
             }
         });
 
@@ -190,6 +199,7 @@ public class GridFragment extends Fragment {
             save_fab.setVisibility(View.INVISIBLE);
             close_fab.setVisibility(View.INVISIBLE);
             setAllFragments();
+            selectedAdapterPositions = new ArrayList<>();
             currentMode = mode;
             mode.finish();
         }
@@ -227,6 +237,7 @@ public class GridFragment extends Fragment {
             }
 
             currentMode = mode;
+            Log.d("Check selected items", String.valueOf(selectedAdapterPositions.size()));
         }
     }
 
@@ -235,7 +246,7 @@ public class GridFragment extends Fragment {
         switch (category) {
             case "meat":
                 currentCategory = 0;
-                for (InventoryItem i : inventoryList) {
+                for (Inventory i : inventoryList) {
                     if (i.getCategory().equals("meat")) {
                         displayList.add(i);
                     }
@@ -243,7 +254,7 @@ public class GridFragment extends Fragment {
                 break;
             case "fruitveg":
                 currentCategory = 1;
-                for (InventoryItem i : inventoryList) {
+                for (Inventory i : inventoryList) {
                     if (i.getCategory().equals("fruitveg")) {
                         displayList.add(i);
                     }
@@ -251,7 +262,7 @@ public class GridFragment extends Fragment {
                 break;
             case "grocery":
                 currentCategory = 2;
-                for (InventoryItem i : inventoryList) {
+                for (Inventory i : inventoryList) {
                     if (i.getCategory().equals("grocery")) {
                         displayList.add(i);
                     }
