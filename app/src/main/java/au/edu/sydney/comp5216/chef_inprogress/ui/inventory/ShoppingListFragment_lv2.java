@@ -28,16 +28,16 @@ public class ShoppingListFragment_lv2 extends Fragment {
 
         inventoryList = new ArrayList<>();
 
-        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
-        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
-        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+//        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+//        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
 
         // Initialize the custom adapter and connect listView with adapter
         itemsAdapter = new InventoryItemAdapter(getContext(), inventoryList);

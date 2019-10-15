@@ -12,8 +12,15 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class InventoryItemAdapter extends ArrayAdapter<InventoryItem> {
+    private ArrayList<InventoryItem> inventoryList;
+
+    /* Context */
+    private Context context;
+
     public InventoryItemAdapter(Context context, ArrayList<InventoryItem> items) {
         super(context, 0, items);
+        this.context = context;
+        this.inventoryList = items;
     }
 
     /**
@@ -43,5 +50,10 @@ public class InventoryItemAdapter extends ArrayAdapter<InventoryItem> {
         // Return the completed view to render on screen
         return convertView;
     }
+
+//    @Override
+//    public int getCount() {
+//        return inventoryList.count();
+//    }
 
 }
