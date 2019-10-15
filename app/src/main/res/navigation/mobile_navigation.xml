@@ -21,7 +21,7 @@
         android:id="@+id/navigation_add"
         android:name="au.edu.sydney.comp5216.chef_inprogress.ui.add.AddFragment"
         android:label="@string/title_add"
-        tools:layout="@layout/fragment_add_old" />
+        tools:layout="@layout/fragment_add" />
 
     <fragment
         android:id="@+id/navigation_favorite"

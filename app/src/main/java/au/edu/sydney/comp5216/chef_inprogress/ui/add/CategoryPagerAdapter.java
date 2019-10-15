@@ -26,10 +26,22 @@ public class CategoryPagerAdapter extends FragmentPagerAdapter {
         return mFragmentList.size();
     }
 
-    public void addFragment(Fragment fragment, String title) {
-        mFragmentList.add(fragment);
-        mFragmentTitleList.add(title);
+    public void addFragment(Fragment fragment, String title, int position) {
+        mFragmentList.add(position, fragment);
+        mFragmentTitleList.add(position, title);
     }
+
+    public void setFragment(Fragment fragment, String title, int position) {
+        mFragmentList.set(position, fragment);
+        mFragmentTitleList.set(position, title);
+    }
+
+    public void removeFragment(Fragment fragment, int position) {
+        mFragmentList.remove(position);
+        mFragmentTitleList.remove(position);
+    }
+
+
 
     @Override
     public CharSequence getPageTitle(int position) {

@@ -24,7 +24,7 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE inventoryItem (ID INTEGER PRIMARY KEY AUTOINCREMENT, ITEMNAME TEXT, CATEGORY TEXT, ICON INTEGER)");
+        db.execSQL("CREATE TABLE inventoryItem (ID INTEGER PRIMARY KEY AUTOINCREMENT, ITEMNAME TEXT, CATEGORY TEXT, ICON INTEGER, USERINVENTORY INTEGER)");
 
     }
 
@@ -47,12 +47,13 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
      * @param icon
      * @return
      */
-    public boolean insertData(String itemname, String category, int icon){
+    public boolean insertData(String itemname, String category, int icon, int userInventory){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("ITEMNAME",itemname);
         contentValues.put("CATEGORY",category);
         contentValues.put("ICON",icon);
+        contentValues.put("USERINVENTORY", userInventory);
 
         long result = db.insert("inventoryItem",null,contentValues);
 
@@ -64,8 +65,8 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
      * to retrieve all the data
      * @return
      */
-    public ArrayList<InventoryItem> getAllData(){
-        ArrayList<InventoryItem> arrayList = new ArrayList<>();
+    public ArrayList<Inventory> getAllData(){
+        ArrayList<Inventory> arrayList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM inventoryItem",null);
 
@@ -74,12 +75,73 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
             String itemName = cursor.getString(1);
             String category = cursor.getString(2);
             int icon = cursor.getInt(3);
+            int userInventory = cursor.getInt(4);
 
-            InventoryItem item = new InventoryItem(itemName, category, icon);
+            Inventory item = new Inventory(id, itemName, category, icon, userInventory);
 
             arrayList.add(item);
         }
 
         return arrayList;
+    }
+
+    public void saveToUserInventory(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("USERINVENTORY", 1);
+
+        db.update("inventoryItem", contentValues, "ID="+id, null);
+    }
+
+    public void removeFromUserInventory(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("USERINVENTORY", 0);
+
+        db.update("inventoryItem", contentValues, "ID="+id, null);
+    }
+
+    public ArrayList<Inventory> getItemsNotInUserInventory(){
+        ArrayList<Inventory> arrayList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM inventoryItem",null);
+
+        while(cursor.moveToNext()){
+            int id = cursor.getInt(0);
+            String itemName = cursor.getString(1);
+            String category = cursor.getString(2);
+            int icon = cursor.getInt(3);
+            int userInventory = cursor.getInt(4);
+
+            if(userInventory == 0){
+                Inventory item = new Inventory(id, itemName, category, icon, userInventory);
+                arrayList.add(item);
+            }
+        }
+
+        return arrayList;
+
+    }
+
+    public ArrayList<Inventory> getItemsInUserInventory(){
+        ArrayList<Inventory> arrayList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM inventoryItem",null);
+
+        while(cursor.moveToNext()){
+            int id = cursor.getInt(0);
+            String itemName = cursor.getString(1);
+            String category = cursor.getString(2);
+            int icon = cursor.getInt(3);
+            int userInventory = cursor.getInt(4);
+
+            if(userInventory == 1){
+                Inventory item = new Inventory(id, itemName, category, icon, userInventory);
+                arrayList.add(item);
+            }
+        }
+
+        return arrayList;
+
     }
 }

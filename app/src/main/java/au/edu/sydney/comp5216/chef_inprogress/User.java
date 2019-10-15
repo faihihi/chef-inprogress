@@ -7,7 +7,7 @@ public class User {
     private String password;
     private String email;
 
-    private ArrayList<InventoryItem> userInventory;
+    private ArrayList<Inventory> userInventory;
     private ArrayList<String> userShoppingList;
 
     // Recipes that user have made
@@ -19,7 +19,7 @@ public class User {
         this.email = email;
     }
 
-    public void setUserInventory(ArrayList<InventoryItem> userInventory) {
+    public void setUserInventory(ArrayList<Inventory> userInventory) {
         this.userInventory = userInventory;
     }
 
@@ -43,7 +43,7 @@ public class User {
         return password;
     }
 
-    public ArrayList<InventoryItem> getUserInventory() {
+    public ArrayList<Inventory> getUserInventory() {
         return userInventory;
     }
 
