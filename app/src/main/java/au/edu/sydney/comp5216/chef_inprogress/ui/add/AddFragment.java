@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,33 +12,19 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.ArrayList;
-
 import au.edu.sydney.comp5216.chef_inprogress.GlobalVariables;
-import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
-import au.edu.sydney.comp5216.chef_inprogress.InventoryItem;
-import au.edu.sydney.comp5216.chef_inprogress.InventoryItemAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.R;
-import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.InventoryFragment_lv2;
-import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ShoppingListFragment_lv2;
-import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ViewPagerAdapter;
 
 public class AddFragment extends Fragment {
     CategoryPagerAdapter categoryPagerAdapter;
 
-    private ArrayList<InventoryItem> inventoryList;
-    private ArrayAdapter<InventoryItem> itemsAdapter;
-
     private TabLayout tabLayout;
     private ViewPager viewPager;
-
-    private InventoryDBHelper inventoryDBHelper;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_add, container, false);
-
 
         viewPager = root.findViewById(R.id.addViewPager);
         setupViewPager(viewPager);
@@ -75,7 +59,6 @@ public class AddFragment extends Fragment {
         categoryPagerAdapter.addFragment(f,"GROCERY", 2);
 
         ((GlobalVariables) getActivity().getApplication()).setViewPagerAdapter(categoryPagerAdapter);
-        ((GlobalVariables) getActivity().getApplication()).setCurrentCategory(-1);
         viewPager.setAdapter(categoryPagerAdapter);
     }
 

@@ -1,5 +1,7 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.add;
 
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ActionMode;
@@ -16,14 +18,21 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.muddzdev.styleabletoast.StyleableToast;
 
 import java.util.ArrayList;
 
@@ -35,21 +44,22 @@ import au.edu.sydney.comp5216.chef_inprogress.R;
 import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ViewPagerAdapter;
 
 public class GridFragment extends Fragment {
-    MultiChoiceModeListener modeListenerGridFragment;
     CategoryPagerAdapter categoryPagerAdapter;
-    int currentCategory;
+    private MultiChoiceModeListener myModeListener;
+    private ActionMode currentMode;
 
     private ArrayList<InventoryItem> inventoryList, displayList;
     private ArrayAdapter<InventoryItem> itemsAdapter;
     private InventoryDBHelper inventoryDBHelper;
+    private ArrayList<Integer> selectedPositions, selectedAdapterPositions;
 
     private GridView gridView;
-    private ArrayList<Integer> selectedPositions;
-    private ViewPagerAdapter viewPagerAdapter;
+    private FloatingActionButton save_fab, close_fab;
 
     private boolean firstOpen = false;
     private String category;
-
+    private int currentCategory;
+    private boolean allfragments;
 
     @Nullable
     @Override
@@ -57,7 +67,6 @@ public class GridFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_inventory_lv2, container, false);
 
         categoryPagerAdapter = ((GlobalVariables) getActivity().getApplication()).getViewPagerAdapter();
-        currentCategory = ((GlobalVariables) getActivity().getApplication()).getCurrentCategory();
 
         if (!firstOpen) {
             Bundle args = getArguments();
@@ -67,11 +76,11 @@ public class GridFragment extends Fragment {
         inventoryDBHelper = new InventoryDBHelper(getContext());
 
         inventoryList = new ArrayList<>();
-        inventoryList = inventoryDBHelper.getAllData();
+        inventoryList = inventoryDBHelper.getItemsNotInUserInventory();
 
         displayList = new ArrayList<>();
-
         selectedPositions = new ArrayList<>();
+        selectedAdapterPositions = new ArrayList<>();
 
         setDisplayList(category);
 
@@ -83,8 +92,50 @@ public class GridFragment extends Fragment {
 
         gridView.setAdapter(itemsAdapter);
         gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
-        modeListenerGridFragment = new MultiChoiceModeListener();
-        gridView.setMultiChoiceModeListener(modeListenerGridFragment);
+        myModeListener = new MultiChoiceModeListener();
+        gridView.setMultiChoiceModeListener(myModeListener);
+
+        save_fab = (FloatingActionButton) view.findViewById(R.id.save_fab);
+        close_fab = (FloatingActionButton) view.findViewById(R.id.close_fab);
+
+        save_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                StyleableToast.makeText(getContext(), "Saved items to Inventory", Toast.LENGTH_SHORT).show();
+
+
+                for (Integer position : selectedPositions) {
+                    inventoryDBHelper.saveToUserInventory(position);
+                }
+
+                int count = 0;
+                for(Integer position: selectedAdapterPositions){
+                    position = position - count;
+                    if(position < 0){
+                        position = 0;
+                    }
+                    itemsAdapter.remove(displayList.get(position));
+                    count++;
+                    itemsAdapter.notifyDataSetChanged();
+                }
+
+                for (int i = 0; i < gridView.getChildCount(); i++) {
+                    ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.grid_selector);
+                    iv.setVisibility(View.INVISIBLE);
+                }
+
+                setAllFragments();
+                myModeListener.onDestroyActionMode(currentMode);
+            }
+        });
+
+        close_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myModeListener.onDestroyActionMode(currentMode);
+            }
+        });
 
 
         return view;
@@ -93,7 +144,6 @@ public class GridFragment extends Fragment {
     //multi select mode codes
     private class MultiChoiceModeListener implements GridView.MultiChoiceModeListener {
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-
             switch (currentCategory) {
                 case 0:
                     categoryPagerAdapter.removeFragment(new GridFragment(), 2);
@@ -111,67 +161,37 @@ public class GridFragment extends Fragment {
                     break;
             }
             categoryPagerAdapter.notifyDataSetChanged();
+            allfragments = false;
 
-
-            mode.setTitle("Select Items");
+            mode.setTitle("Add Ingredients to Inventory");
             mode.setSubtitle("1 item selected");
-            mode.getMenuInflater().inflate(R.menu.context_menu, menu);
-            return true;
+            currentMode = mode;
 
+            save_fab.setVisibility(View.VISIBLE);
+            close_fab.setVisibility(View.VISIBLE);
+            return true;
         }
 
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            currentMode = mode;
             return true;
         }
 
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.action_save:
-                    Toast.makeText(getContext(), "Saved items to Inventory", Toast.LENGTH_SHORT).show();
-
-
-                    for (Integer position : selectedPositions) {
-                        inventoryDBHelper.saveToUserInventory(position);
-                    }
-
-                    for (int i = 0; i < gridView.getChildCount(); i++) {
-                        ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.grid_selector);
-                        iv.setVisibility(View.INVISIBLE);
-                    }
-                    mode.finish();
-
-                    categoryPagerAdapter.removeFragment(new GridFragment(), 0);
-
-                    Bundle args = new Bundle();
-                    args.putString("category", "meat");
-                    GridFragment f = new GridFragment();
-                    f.setArguments(args);
-                    categoryPagerAdapter.addFragment(f, "MEAT", 0);
-
-
-                    args = new Bundle();
-                    args.putString("category", "fruitveg");
-                    f = new GridFragment();
-                    f.setArguments(args);
-                    categoryPagerAdapter.addFragment(f, "FRUITS & VEG", 1);
-
-                    args = new Bundle();
-                    args.putString("category", "grocery");
-                    f = new GridFragment();
-                    f.setArguments(args);
-                    categoryPagerAdapter.addFragment(f, "GROCERY", 2);
-
-                    categoryPagerAdapter.notifyDataSetChanged();
-                    ((GlobalVariables) getActivity().getApplication()).setCurrentCategory(-1);
-                    break;
-                default:
-                    break;
-            }
-
             return true;
         }
 
         public void onDestroyActionMode(ActionMode mode) {
+            for (int i = 0; i < gridView.getChildCount(); i++) {
+                ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.grid_selector);
+                iv.setVisibility(View.INVISIBLE);
+            }
+
+            save_fab.setVisibility(View.INVISIBLE);
+            close_fab.setVisibility(View.INVISIBLE);
+            setAllFragments();
+            currentMode = mode;
+            mode.finish();
         }
 
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
@@ -187,6 +207,7 @@ public class GridFragment extends Fragment {
 
             if (checked) {
                 selectedPositions.add(displayList.get(position).getId());
+                selectedAdapterPositions.add(position);
                 ImageView iv = (ImageView) gridView.getChildAt(position).findViewById(R.id.grid_selector);
                 iv.setVisibility(View.VISIBLE);
             } else {
@@ -195,9 +216,17 @@ public class GridFragment extends Fragment {
                         selectedPositions.remove(i);
                     }
                 }
+
+                for(int i=0;i<selectedAdapterPositions.size();i++){
+                    if(selectedAdapterPositions.get(i) == position){
+                        selectedAdapterPositions.remove(i);
+                    }
+                }
                 ImageView iv = (ImageView) gridView.getChildAt(position).findViewById(R.id.grid_selector);
                 iv.setVisibility(View.INVISIBLE);
             }
+
+            currentMode = mode;
         }
     }
 
@@ -233,5 +262,32 @@ public class GridFragment extends Fragment {
         }
     }
 
+    private void setAllFragments(){
+        if(!allfragments){
+            categoryPagerAdapter.removeFragment(new GridFragment(), 0);
 
+            Bundle args = new Bundle();
+            args.putString("category", "meat");
+            GridFragment f = new GridFragment();
+            f.setArguments(args);
+            categoryPagerAdapter.addFragment(f, "MEAT", 0);
+
+
+            args = new Bundle();
+            args.putString("category", "fruitveg");
+            f = new GridFragment();
+            f.setArguments(args);
+            categoryPagerAdapter.addFragment(f, "FRUITS & VEG", 1);
+
+            args = new Bundle();
+            args.putString("category", "grocery");
+            f = new GridFragment();
+            f.setArguments(args);
+            categoryPagerAdapter.addFragment(f, "GROCERY", 2);
+
+            categoryPagerAdapter.notifyDataSetChanged();
+
+            allfragments = true;
+        }
+    }
 }

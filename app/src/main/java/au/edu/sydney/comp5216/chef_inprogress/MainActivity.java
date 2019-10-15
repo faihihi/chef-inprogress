@@ -1,6 +1,9 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
+import android.app.ActionBar;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
