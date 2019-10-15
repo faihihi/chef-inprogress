@@ -1,196 +1,78 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.inventory;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.SearchView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.muddzdev.styleabletoast.StyleableToast;
+import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
 
-import au.edu.sydney.comp5216.chef_inprogress.Inventory;
-import au.edu.sydney.comp5216.chef_inprogress.InventoryAdapter;
-import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
+import au.edu.sydney.comp5216.chef_inprogress.InventoryItem;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryItemAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.R;
-import au.edu.sydney.comp5216.chef_inprogress.ui.add.GridFragment;
 
 public class InventoryFragment_lv2 extends Fragment {
-    ArrayList<Inventory> userInventoryList = new ArrayList<>();
-    private InventoryAdapter userItemsAdapter;
-
-    private MultiChoiceModeListener myModeListener;
-    private ActionMode currentMode;
-
-    GridView gridView;
-    private FloatingActionButton save_fab, close_fab;
-    private SearchView search_bar;
-
-    private InventoryDBHelper inventoryDBHelper;
-    private ArrayList<Integer> selectedPositions, selectedAdapterPositions;
+    private ArrayList<InventoryItem> inventoryList;
+    private ArrayAdapter<InventoryItem> itemsAdapter;
+    private ViewPagerAdapter viewPagerAdapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_inventory_lv2,container,false);
 
-        inventoryDBHelper = new InventoryDBHelper(getContext());
-        userInventoryList = inventoryDBHelper.getItemsInUserInventory();
+        inventoryList = new ArrayList<>();
+
+        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
+        inventoryList.add(new InventoryItem("Apple", "Fruit", R.drawable.apple));
+        inventoryList.add(new InventoryItem("Fish","Meat",R.drawable.fish));
 
         // Initialize the custom adapter and connect listView with adapter
-        userItemsAdapter = new InventoryAdapter(getContext(), userInventoryList);
-        gridView = (GridView) view.findViewById(R.id.inventoryGridView);
-        gridView.setAdapter(userItemsAdapter);
+        itemsAdapter = new InventoryItemAdapter(getContext(), inventoryList);
+        GridView gridView = (GridView) view.findViewById(R.id.inventoryGridView);
+        gridView.setAdapter(itemsAdapter);
 
-        gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
-        myModeListener = new MultiChoiceModeListener();
-        gridView.setMultiChoiceModeListener(myModeListener);
-
-        selectedPositions = new ArrayList<>();
-        selectedAdapterPositions = new ArrayList<>();
-
-        save_fab = (FloatingActionButton) view.findViewById(R.id.save_fab);
-        close_fab = (FloatingActionButton) view.findViewById(R.id.close_fab);
-
-        save_fab.setOnClickListener(new View.OnClickListener() {
+        gridView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View view) {
-                StyleableToast.makeText(getContext(), "Remove from Inventory", Toast.LENGTH_SHORT).show();
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Delete the item")
+                        .setMessage("Do you want to delete this item?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //remove item from shopping list
+                                itemsAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                int count = 0;
-                for(Integer position: selectedAdapterPositions){
-                    position = position - count;
-                    if(position < 0){
-                        position = 0;
-                    }
-                    userInventoryList.remove(userInventoryList.get(position));
-                    userItemsAdapter.notifyDataSetChanged();
-                    count++;
-                }
+                            }
+                        });
 
-                for (Integer position : selectedPositions) {
-                    inventoryDBHelper.removeFromUserInventory(position);
-                }
-
-                for (int i = 0; i < gridView.getChildCount(); i++) {
-                    ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.grid_selector);
-                    iv.setVisibility(View.INVISIBLE);
-                }
-
-                myModeListener.onDestroyActionMode(currentMode);
+                builder.create().show();
+                return true;
             }
         });
-
-        close_fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                myModeListener.onDestroyActionMode(currentMode);
-            }
-        });
-
-
-        search_bar = (SearchView) view.findViewById(R.id.searchView);
-        search_bar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String query) {
-                ((InventoryAdapter) gridView.getAdapter()).getFilter().filter(query);
-                userItemsAdapter.notifyDataSetChanged();
-                return false;
-            }
-        });
-
 
         return view;
-    }
-
-    //multi select mode codes
-    private class MultiChoiceModeListener implements GridView.MultiChoiceModeListener {
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.setTitle("Remove Ingredients");
-            mode.setSubtitle("1 item selected");
-
-            save_fab.setVisibility(View.VISIBLE);
-            close_fab.setVisibility(View.VISIBLE);
-
-            currentMode = mode;
-            return true;
-        }
-
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            currentMode = mode;
-            return true;
-        }
-
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            return true;
-        }
-
-        public void onDestroyActionMode(ActionMode mode) {
-            for (int i = 0; i < gridView.getChildCount(); i++) {
-                ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.remove_selector);
-                iv.setVisibility(View.INVISIBLE);
-            }
-
-            save_fab.setVisibility(View.INVISIBLE);
-            close_fab.setVisibility(View.INVISIBLE);
-            selectedAdapterPositions = new ArrayList<>();
-            currentMode = mode;
-            mode.finish();
-        }
-
-        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            int selectCount = gridView.getCheckedItemCount();
-            switch (selectCount) {
-                case 1:
-                    mode.setSubtitle("1 item selected");
-                    break;
-                default:
-                    mode.setSubtitle("" + selectCount + " items selected");
-                    break;
-            }
-
-            if(checked){
-                selectedPositions.add(userInventoryList.get(position).getId());
-                selectedAdapterPositions.add(position);
-                ImageView iv = (ImageView) gridView.getChildAt(position).findViewById(R.id.remove_selector);
-                iv.setVisibility(View.VISIBLE);
-            }else{
-                for(int i=0;i<selectedPositions.size();i++){
-                    if(selectedPositions.get(i) == position){
-                        selectedPositions.remove(i);
-                    }
-                }
-
-                for(int i=0;i<selectedAdapterPositions.size();i++){
-                    if(selectedAdapterPositions.get(i) == position){
-                        selectedAdapterPositions.remove(i);
-                    }
-                }
-
-                ImageView iv = (ImageView) gridView.getChildAt(position).findViewById(R.id.remove_selector);
-                iv.setVisibility(View.INVISIBLE);
-            }
-            currentMode = mode;
-        }
     }
 }
