@@ -1,8 +1,7 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.add;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -10,11 +9,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,10 +25,13 @@ import com.muddzdev.styleabletoast.StyleableToast;
 
 import java.util.ArrayList;
 
+import com.google.android.gms.common.api.CommonStatusCodes;
+
 import au.edu.sydney.comp5216.chef_inprogress.GlobalVariables;
 import au.edu.sydney.comp5216.chef_inprogress.Inventory;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
+import au.edu.sydney.comp5216.chef_inprogress.OcrCaptureActivity;
 import au.edu.sydney.comp5216.chef_inprogress.R;
 
 public class GridFragment extends Fragment {
@@ -45,11 +47,19 @@ public class GridFragment extends Fragment {
     private GridView gridView;
     private FloatingActionButton save_fab, close_fab;
     private SearchView search_bar;
+    private ImageView scan_btn;
 
     private boolean firstOpen = false;
     private String category;
     private int currentCategory;
     private boolean allfragments;
+
+    // Variables for OCR reader
+    private TextView statusMessage;
+    private TextView textValue;
+
+    private static final int RC_OCR_CAPTURE = 9003;
+    private static final String TAG = "GridFragment";
 
     @Nullable
     @Override
@@ -130,6 +140,19 @@ public class GridFragment extends Fragment {
                 ((InventoryAdapter) gridView.getAdapter()).getFilter().filter(query);
                 itemsAdapter.notifyDataSetChanged();
                 return false;
+            }
+        });
+
+        scan_btn = (ImageView) view.findViewById(R.id.scan_btn);
+        scan_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // launch Ocr capture activity.
+                Intent intent = new Intent(getActivity(), OcrCaptureActivity.class);
+                intent.putExtra(OcrCaptureActivity.AutoFocus, true);
+                intent.putExtra(OcrCaptureActivity.UseFlash, false);
+
+                startActivityForResult(intent, RC_OCR_CAPTURE);
             }
         });
 
@@ -281,6 +304,48 @@ public class GridFragment extends Fragment {
             categoryPagerAdapter.notifyDataSetChanged();
 
             allfragments = true;
+        }
+    }
+
+    /**
+     * Called when an activity you launched exits, giving you the requestCode
+     * you started it with, the resultCode it returned, and any additional
+     * data from it.  The <var>resultCode</var> will be
+     * if the activity explicitly returned that,
+     * didn't return any result, or crashed during its operation.
+     * <p/>
+     * <p>You will receive this call immediately before onResume() when your
+     * activity is re-starting.
+     * <p/>
+     *
+     * @param requestCode The integer request code originally supplied to
+     *                    startActivityForResult(), allowing you to identify who this
+     *                    result came from.
+     * @param resultCode  The integer result code returned by the child activity
+     *                    through its setResult().
+     * @param data        An Intent, which can return result data to the caller
+     *                    (various data can be attached to Intent "extras").
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == RC_OCR_CAPTURE) {
+            if (resultCode == CommonStatusCodes.SUCCESS) {
+                if (data != null) {
+                    String text = data.getStringExtra(OcrCaptureActivity.TextBlockObject);
+//                    statusMessage.setText(R.string.ocr_success);
+//                    textValue.setText(text);
+                    Log.d(TAG, "Text read: " + text);
+                } else {
+//                    statusMessage.setText(R.string.ocr_failure);
+                    Log.d(TAG, "No Text captured, intent data is null");
+                }
+            } else {
+//                statusMessage.setText(String.format(getString(R.string.ocr_error),
+//                        CommonStatusCodes.getStatusCodeString(resultCode)));
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 }

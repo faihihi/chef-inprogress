@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="au.edu.sydney.comp5216.chef_inprogress">
 
+    <uses-feature android:name="android.hardware.camera" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".GlobalVariables"
@@ -13,6 +15,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.gms.vision.DEPENDENCIES"
+            android:value="ocr" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -22,6 +28,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="au.edu.sydney.comp5216.chef_inprogress.OcrCaptureActivity"
+            android:label="Read Text" />
     </application>
 
 </manifest>
