@@ -32,6 +32,7 @@ import au.edu.sydney.comp5216.chef_inprogress.ui.add.GridFragment;
 
 public class InventoryFragment_lv2 extends Fragment {
     ArrayList<Inventory> userInventoryList = new ArrayList<>();
+    private ArrayList<Inventory> selectedItem;
     private InventoryAdapter userItemsAdapter;
 
     private MultiChoiceModeListener myModeListener;
@@ -42,7 +43,7 @@ public class InventoryFragment_lv2 extends Fragment {
     private SearchView search_bar;
 
     private InventoryDBHelper inventoryDBHelper;
-    private ArrayList<Integer> selectedPositions, selectedAdapterPositions;
+    private ArrayList<Integer> selectedPositions;
 
     @Nullable
     @Override
@@ -61,10 +62,10 @@ public class InventoryFragment_lv2 extends Fragment {
         myModeListener = new MultiChoiceModeListener();
         gridView.setMultiChoiceModeListener(myModeListener);
 
+        selectedItem = new ArrayList<>();
         selectedPositions = new ArrayList<>();
-        selectedAdapterPositions = new ArrayList<>();
 
-        save_fab = (FloatingActionButton) view.findViewById(R.id.save_fab);
+        save_fab = (FloatingActionButton) view.findViewById(R.id.remove_fab);
         close_fab = (FloatingActionButton) view.findViewById(R.id.close_fab);
 
         save_fab.setOnClickListener(new View.OnClickListener() {
@@ -72,15 +73,9 @@ public class InventoryFragment_lv2 extends Fragment {
             public void onClick(View view) {
                 StyleableToast.makeText(getContext(), "Remove from Inventory", Toast.LENGTH_SHORT).show();
 
-                int count = 0;
-                for(Integer position: selectedAdapterPositions){
-                    position = position - count;
-                    if(position < 0){
-                        position = 0;
-                    }
-                    userInventoryList.remove(userInventoryList.get(position));
+                for(Inventory item: selectedItem){
+                    userInventoryList.remove(item);
                     userItemsAdapter.notifyDataSetChanged();
-                    count++;
                 }
 
                 for (Integer position : selectedPositions) {
@@ -153,7 +148,8 @@ public class InventoryFragment_lv2 extends Fragment {
 
             save_fab.setVisibility(View.INVISIBLE);
             close_fab.setVisibility(View.INVISIBLE);
-            selectedAdapterPositions = new ArrayList<>();
+
+            selectedPositions = new ArrayList<>();
             currentMode = mode;
             mode.finish();
         }
@@ -170,20 +166,15 @@ public class InventoryFragment_lv2 extends Fragment {
             }
 
             if(checked){
+                selectedItem.add(userInventoryList.get(position));
                 selectedPositions.add(userInventoryList.get(position).getId());
-                selectedAdapterPositions.add(position);
                 ImageView iv = (ImageView) gridView.getChildAt(position).findViewById(R.id.remove_selector);
                 iv.setVisibility(View.VISIBLE);
             }else{
+                selectedItem.remove(userInventoryList.get(position));
                 for(int i=0;i<selectedPositions.size();i++){
                     if(selectedPositions.get(i) == position){
                         selectedPositions.remove(i);
-                    }
-                }
-
-                for(int i=0;i<selectedAdapterPositions.size();i++){
-                    if(selectedAdapterPositions.get(i) == position){
-                        selectedAdapterPositions.remove(i);
                     }
                 }
 

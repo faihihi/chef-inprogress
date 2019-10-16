@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="347.787dp"
+    android:height="347.787dp"
+    android:viewportWidth="347.787"
+    android:viewportHeight="347.787">
+
+    <path
+        android:fillColor="#FEDD3D"
+        android:pathData="M 185.058 0 L 162.729 0 L 128.908 61.667 L 218.88 61.667 Z" />
+    <path
+        android:fillColor="#B3874F"
+        android:pathData="M 121.65 56.667 H 226.135 V 88.333 H 121.65 V 56.667 Z" />
+    <path
+        android:fillColor="#F2D383"
+        android:pathData="M 135.015 56.667 H 142.272 V 88.333 H 135.015 V 56.667 Z" />
+    <path
+        android:fillColor="#F2D383"
+        android:pathData="M 158.515 56.667 H 165.772 V 88.333 H 158.515 V 56.667 Z" />
+    <path
+        android:fillColor="#F2D383"
+        android:pathData="M 182.015 56.667 H 189.272 V 88.333 H 182.015 V 56.667 Z" />
+    <path
+        android:fillColor="#F2D383"
+        android:pathData="M 205.515 56.667 H 212.772 V 88.333 H 205.515 V 56.667 Z" />
+    <path
+        android:fillColor="#FEDD3D"
+        android:pathData="M251.119,101.666c0-11-9-20-20-20H116.668c-11,0-20,9-20,20v226.121c0,11,9,20,20,20h114.451 c11,0,20-9,20-20V101.666L251.119,101.666z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 124.637 136.933 H 223.152 V 292.522 H 124.637 V 136.933 Z" />
+    <path
+        android:fillColor="#FEDD3D"
+        android:pathData="M171.092,259.273c-3.201,0-6.224-1.935-7.456-5.098c-1.604-4.116,0.433-8.754,4.549-10.358 c2.957-1.152,5.386-3.346,6.837-6.177c3.271-6.379,0.744-14.23-5.635-17.501c-6.893-3.534-11.996-9.541-14.371-16.915 c-2.375-7.373-1.735-15.23,1.799-22.123c4.521-8.814,13.111-14.657,22.98-15.63c4.393-0.42,8.313,2.78,8.746,7.178 c0.433,4.396-2.78,8.313-7.177,8.746c-4.43,0.437-8.285,3.056-10.312,7.007c-1.585,3.091-1.871,6.612-0.807,9.918 c1.065,3.306,3.353,5.998,6.442,7.582c14.229,7.299,19.868,24.811,12.571,39.039c-3.239,6.315-8.66,11.21-15.265,13.784 C173.041,259.098,172.058,259.273,171.092,259.273z" />
+</vector>
