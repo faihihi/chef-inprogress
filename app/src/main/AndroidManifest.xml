@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name="au.edu.sydney.comp5216.chef_inprogress.OcrCaptureActivity"
-            android:label="Read Text" />
+            android:label="Tap on Ingredients that you wish to add" />
     </application>
 
 </manifest>

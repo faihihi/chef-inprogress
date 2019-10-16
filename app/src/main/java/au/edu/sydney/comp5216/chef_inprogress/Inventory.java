@@ -31,6 +31,8 @@ public class Inventory {
     }
 
     public String getItemName(){return itemName;}
+    public String getItemNameWithS(){ return itemName + "s";}
+    public String getItemNameWithES(){return itemName + "es";}
     public String getCategory(){return category;}
     public int getIcon() {return icon;}
 

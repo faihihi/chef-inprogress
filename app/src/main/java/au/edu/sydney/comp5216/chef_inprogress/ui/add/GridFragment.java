@@ -1,5 +1,6 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.add;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,15 +10,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -39,7 +43,7 @@ public class GridFragment extends Fragment {
     private MultiChoiceModeListener myModeListener;
     private ActionMode currentMode;
 
-    private ArrayList<Inventory> inventoryList, displayList, selectedItem;
+    private ArrayList<Inventory> inventoryList, displayList, selectedItem, scannedListResult;
     private InventoryAdapter itemsAdapter;
     private InventoryDBHelper inventoryDBHelper;
     private ArrayList<Integer> selectedPositions;
@@ -81,6 +85,7 @@ public class GridFragment extends Fragment {
         displayList = new ArrayList<>();
         selectedItem = new ArrayList<>();
         selectedPositions = new ArrayList<>();
+        scannedListResult = new ArrayList<>();
 
         setDisplayList(category);
 
@@ -332,20 +337,82 @@ public class GridFragment extends Fragment {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {
                     String text = data.getStringExtra(OcrCaptureActivity.TextBlockObject);
-//                    statusMessage.setText(R.string.ocr_success);
-//                    textValue.setText(text);
+                    scannedListResult = checkIfItemIsAvailable(text);
                     Log.d(TAG, "Text read: " + text);
                 } else {
-//                    statusMessage.setText(R.string.ocr_failure);
                     Log.d(TAG, "No Text captured, intent data is null");
                 }
             } else {
 //                statusMessage.setText(String.format(getString(R.string.ocr_error),
 //                        CommonStatusCodes.getStatusCodeString(resultCode)));
             }
+
+            if(scannedListResult.size() > 0){
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                ArrayList<String> matchedList = new ArrayList<>();
+                for(Inventory item : scannedListResult){
+                    matchedList.add(item.getItemName());
+                }
+
+                String[] matchedListArr = new String[matchedList.size()];
+                for(int i=0;i<matchedListArr.length;i++){
+                    matchedListArr[i] = matchedList.get(i);
+                    Log.d("Added MATCHED", matchedListArr[i]);
+                }
+
+                builder.setTitle("Would you like to add these ingredients to your inventory?")
+                        .setItems(matchedListArr, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setPositiveButton("ADD", new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialogInterface, int i){
+                                for(Inventory item: scannedListResult){
+                                    inventoryDBHelper.saveToUserInventory(item.getId());
+                                }
+                                StyleableToast.makeText(getContext(), "Saved items to Inventory", Toast.LENGTH_SHORT).show();
+
+                            }
+                        })
+                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialogInterface, int i){
+                            }
+                        });
+                builder.create().show();
+
+            } else{
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Ingredients Not Found")
+                        .setMessage("Sorry, we do not have these ingredients in our Database :(")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialogInterface, int i){
+                            }
+                        });
+                builder.create().show();
+
+            }
         }
         else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private ArrayList<Inventory> checkIfItemIsAvailable(String text){
+        ArrayList<Inventory> scannedList = new ArrayList<>();
+
+        for(String word: text.split("\\W+")){
+            for(Inventory item: inventoryList){
+                if((word.equalsIgnoreCase(item.getItemName())) ||
+                        (word.equalsIgnoreCase(item.getItemNameWithS())) ||
+                        (word.equalsIgnoreCase(item.getItemNameWithES()))){
+//                    Log.d("ITEM name", item.getItemName());
+//                    Log.d("WORD", word);
+                    scannedList.add(item);
+                }
+            }
+        }
+        return scannedList;
     }
 }

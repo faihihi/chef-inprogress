@@ -91,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
 
             inventoryDBHelper.insertData("Apple", "fruitveg", R.drawable.apple, 0);
             inventoryDBHelper.insertData("Carrot", "fruitveg", R.drawable.carrot, 0);
+            inventoryDBHelper.insertData("Tomato", "fruitveg", R.drawable.tomato, 0);
+            inventoryDBHelper.insertData("Grapes", "fruitveg", R.drawable.grapes, 0);
+            inventoryDBHelper.insertData("Peas", "fruitveg", R.drawable.peas, 0);
 
             inventoryDBHelper.insertData("Cheese","grocery",R.drawable.cheese,0);
             inventoryDBHelper.insertData("Salt","grocery",R.drawable.salt,0);
@@ -99,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
             inventoryDBHelper.insertData("Bread","grocery",R.drawable.bread,0);
             inventoryDBHelper.insertData("Baguette","grocery",R.drawable.baguette,0);
             inventoryDBHelper.insertData("Pasta","grocery",R.drawable.pasta,0);
-
-
 
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).commit();
