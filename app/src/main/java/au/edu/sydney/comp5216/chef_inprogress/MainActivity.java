@@ -85,10 +85,22 @@ public class MainActivity extends AppCompatActivity {
             // Do first run stuff here then set 'firstrun' as false
 
             // Save all the inventory items to database
+            inventoryDBHelper.insertData("Fish","meat",R.drawable.fish,0);
+            inventoryDBHelper.insertData("Beef","meat",R.drawable.steak,0);
+            inventoryDBHelper.insertData("Chicken","meat",R.drawable.meat,0);
+
             inventoryDBHelper.insertData("Apple", "fruitveg", R.drawable.apple, 0);
             inventoryDBHelper.insertData("Carrot", "fruitveg", R.drawable.carrot, 0);
-            inventoryDBHelper.insertData("Fish","meat",R.drawable.fish,0);
+
             inventoryDBHelper.insertData("Cheese","grocery",R.drawable.cheese,0);
+            inventoryDBHelper.insertData("Salt","grocery",R.drawable.salt,0);
+            inventoryDBHelper.insertData("Mustard","grocery",R.drawable.mustard,0);
+            inventoryDBHelper.insertData("Ketchup","grocery",R.drawable.ketchup,0);
+            inventoryDBHelper.insertData("Bread","grocery",R.drawable.bread,0);
+            inventoryDBHelper.insertData("Baguette","grocery",R.drawable.baguette,0);
+            inventoryDBHelper.insertData("Pasta","grocery",R.drawable.pasta,0);
+
+
 
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).commit();

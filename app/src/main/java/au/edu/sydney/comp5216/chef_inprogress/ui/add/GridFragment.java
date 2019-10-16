@@ -37,10 +37,10 @@ public class GridFragment extends Fragment {
     private MultiChoiceModeListener myModeListener;
     private ActionMode currentMode;
 
-    private ArrayList<Inventory> inventoryList, displayList;
+    private ArrayList<Inventory> inventoryList, displayList, selectedItem;
     private InventoryAdapter itemsAdapter;
     private InventoryDBHelper inventoryDBHelper;
-    private ArrayList<Integer> selectedPositions, selectedAdapterPositions;
+    private ArrayList<Integer> selectedPositions;
 
     private GridView gridView;
     private FloatingActionButton save_fab, close_fab;
@@ -69,8 +69,8 @@ public class GridFragment extends Fragment {
         inventoryList = inventoryDBHelper.getItemsNotInUserInventory();
 
         displayList = new ArrayList<>();
+        selectedItem = new ArrayList<>();
         selectedPositions = new ArrayList<>();
-        selectedAdapterPositions = new ArrayList<>();
 
         setDisplayList(category);
 
@@ -92,26 +92,13 @@ public class GridFragment extends Fragment {
 
                 StyleableToast.makeText(getContext(), "Saved items to Inventory", Toast.LENGTH_SHORT).show();
 
-                int count = 0;
-                for(Integer position: selectedAdapterPositions){
-                    position = position - count;
-                    if(position < 0){
-                        position = 0;
-                    }
-
-                    Log.d("Check displayList", displayList.get(position).getItemName());
-                    displayList.remove(displayList.get(position));
+                for(Inventory item: selectedItem){
+                    displayList.remove(item);
                     itemsAdapter.notifyDataSetChanged();
-                    count++;
-
                 }
-
                 for (Integer position : selectedPositions) {
-
                     inventoryDBHelper.saveToUserInventory(position);
                 }
-
-
 
                 for (int i = 0; i < gridView.getChildCount(); i++) {
                     ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.grid_selector);
@@ -199,7 +186,8 @@ public class GridFragment extends Fragment {
             save_fab.setVisibility(View.INVISIBLE);
             close_fab.setVisibility(View.INVISIBLE);
             setAllFragments();
-            selectedAdapterPositions = new ArrayList<>();
+
+            selectedPositions = new ArrayList<>();
             currentMode = mode;
             mode.finish();
         }
@@ -216,20 +204,16 @@ public class GridFragment extends Fragment {
             }
 
             if (checked) {
+                selectedItem.add(displayList.get(position));
                 selectedPositions.add(displayList.get(position).getId());
-                selectedAdapterPositions.add(position);
                 ImageView iv = (ImageView) gridView.getChildAt(position).findViewById(R.id.grid_selector);
                 iv.setVisibility(View.VISIBLE);
             } else {
+                selectedItem.remove(displayList.get(position));
+
                 for (int i = 0; i < selectedPositions.size(); i++) {
                     if (selectedPositions.get(i) == position) {
                         selectedPositions.remove(i);
-                    }
-                }
-
-                for(int i=0;i<selectedAdapterPositions.size();i++){
-                    if(selectedAdapterPositions.get(i) == position){
-                        selectedAdapterPositions.remove(i);
                     }
                 }
                 ImageView iv = (ImageView) gridView.getChildAt(position).findViewById(R.id.grid_selector);
@@ -237,12 +221,10 @@ public class GridFragment extends Fragment {
             }
 
             currentMode = mode;
-            Log.d("Check selected items", String.valueOf(selectedAdapterPositions.size()));
         }
     }
 
     private void setDisplayList(String category) {
-        Log.d("Set Display List", category);
         switch (category) {
             case "meat":
                 currentCategory = 0;
