@@ -38,6 +38,7 @@ public class HomeFragment extends Fragment {
 
     HomeAdapter arrayAdapter;
     EditText searchTXT;
+    TextView pageTitle;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -55,11 +56,15 @@ public class HomeFragment extends Fragment {
         userRecipe = new ArrayList<>();
         userRecipe = getUserRecipe();
 
+        pageTitle = (TextView) root.findViewById(R.id.title);
+
         // User has ingredients for the recipe in the database
         if(userRecipe.size() > 0){
             arrayAdapter = new HomeAdapter(getContext(), userRecipe);
+            pageTitle.setText("Here's your Recipes");
         } else{
             arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
+            pageTitle.setText("Recommended Recipes");
         }
 
 //        arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);

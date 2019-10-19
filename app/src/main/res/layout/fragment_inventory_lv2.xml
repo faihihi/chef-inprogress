@@ -46,7 +46,7 @@
         app:srcCompat="@drawable/ic_close_black_24dp" />
 
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,7 +55,6 @@
         android:layout_marginRight="15dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/search_bar"
-        android:orientation="horizontal"
         android:padding="10dp">
 
         <SearchView
@@ -72,12 +71,13 @@
             android:id="@+id/scan_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:layout_alignParentRight="true"
             android:contentDescription="@string/scan_btn_pic"
             android:src="@drawable/ic_photo_camera_black_24dp"
             android:visibility="visible" />
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
     <GridView
