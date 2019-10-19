@@ -20,8 +20,7 @@ import au.edu.sydney.comp5216.chef_inprogress.R;
 public class FavoriteFragment extends Fragment{
 
     private ArrayList<Favorite> arrayList;
-    //ArrayAdapter<Favorite> arrayAdapter;
-    FavoriteAdapterTest arrayAdapter;
+    FavoriteAdapter arrayAdapter;
 
     EditText searchTXT;
 
@@ -35,12 +34,12 @@ public class FavoriteFragment extends Fragment{
 
         arrayList = new ArrayList<>();
 
-        arrayList.add(new Favorite("fried chicken","TIME: 10:40","https://food.fnr.sndimg.com/content/dam/images/food/fullset/2012/11/2/0/DV1510H_fried-chicken-recipe-10_s4x3.jpg.rend.hgtvcom.826.620.suffix/1568222255998.jpeg"));
-        arrayList.add(new Favorite("salad","TIME: 5min","https://www.diabetesfoodhub.org/system/thumbs/system/images/recipes/931-diabetic-powerhouse-kale-salad_designed-for-one_071118_3547183137.jpg"));
-        arrayList.add(new Favorite("pizza","TIME: 30min","https://www.biggerbolderbaking.com/wp-content/uploads/2019/07/15-Minute-Pizza-WS-Thumbnail.png"));
-        arrayList.add(new Favorite("burger","TIME: 15min","https://media1.s-nbcnews.com/j/newscms/2019_21/2870431/190524-classic-american-cheeseburger-ew-207p_d9270c5c545b30ea094084c7f2342eb4.fit-760w.jpg"));
+        arrayList.add(new Favorite("Fried chicken","11 min","https://food.fnr.sndimg.com/content/dam/images/food/fullset/2012/11/2/0/DV1510H_fried-chicken-recipe-10_s4x3.jpg.rend.hgtvcom.826.620.suffix/1568222255998.jpeg"));
+        arrayList.add(new Favorite("Salad","5 min","https://www.diabetesfoodhub.org/system/thumbs/system/images/recipes/931-diabetic-powerhouse-kale-salad_designed-for-one_071118_3547183137.jpg"));
+        arrayList.add(new Favorite("Pizza","30 min","https://www.biggerbolderbaking.com/wp-content/uploads/2019/07/15-Minute-Pizza-WS-Thumbnail.png"));
+        arrayList.add(new Favorite("Burger","15 min","https://media1.s-nbcnews.com/j/newscms/2019_21/2870431/190524-classic-american-cheeseburger-ew-207p_d9270c5c545b30ea094084c7f2342eb4.fit-760w.jpg"));
 
-        arrayAdapter = new FavoriteAdapterTest(getContext(), arrayList);
+        arrayAdapter = new FavoriteAdapter(getContext(), arrayList);
         ListView listView = root.findViewById(R.id.favouriteList);
 
         listView.setTextFilterEnabled(true);

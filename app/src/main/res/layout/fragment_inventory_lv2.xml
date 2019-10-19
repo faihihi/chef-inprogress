@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:clickable="false"
     android:contextClickable="false"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:visibility="visible">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/remove_fab"
@@ -71,7 +72,9 @@
             android:id="@+id/scan_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_photo_camera_black_24dp" />
+            android:contentDescription="@string/scan_btn_pic"
+            android:src="@drawable/ic_photo_camera_black_24dp"
+            android:visibility="visible" />
 
 
     </LinearLayout>

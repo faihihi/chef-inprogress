@@ -1,6 +1,8 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -15,7 +17,7 @@ import java.lang.reflect.Type;
 import java.sql.Array;
 import java.util.ArrayList;
 
-public class Recipe {
+public class Recipe implements Parcelable {
     private int id;
     private String title;
     private String imgpath;
@@ -40,8 +42,11 @@ public class Recipe {
     // Instruction
     private String[] instructions;
     private String instructionsString;
+    private ArrayList<Ingredients> instructionsList;
 
     private static String strSeparator = "__,__";
+
+    public Recipe(){}
 
     public Recipe(String title){
         this.title = title;
@@ -79,6 +84,35 @@ public class Recipe {
         this.ingredientsList = convertJSONtoList(ingredientsListString);
         this.instructions = convertStringToArray(instructions);
     }
+
+    protected Recipe(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        imgpath = in.readString();
+        tags = in.createStringArray();
+        tagsString = in.readString();
+        protein = in.readInt();
+        fat = in.readInt();
+        carbs = in.readInt();
+        timeTaken = in.readString();
+        servings = in.readInt();
+        ingredientsList = in.createTypedArrayList(Ingredients.CREATOR);
+        ingredientsListString = in.readString();
+        instructions = in.createStringArray();
+        instructionsString = in.readString();
+    }
+
+    public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
+        @Override
+        public Recipe createFromParcel(Parcel in) {
+            return new Recipe(in);
+        }
+
+        @Override
+        public Recipe[] newArray(int size) {
+            return new Recipe[size];
+        }
+    };
 
     public static String convertArrayToString(String[] array){
         String str = "";
@@ -159,6 +193,28 @@ public class Recipe {
         this.instructionsString = convertArrayToString(instructions);
     }
 
+    public void setIngredientsListString(String ingredientsListString) {
+        this.ingredientsListString = ingredientsListString;
+    }
+
+    public void setInstructionsString(String instructionsString) {
+        this.instructionsString = instructionsString;
+        this.instructions = convertStringToArray(instructionsString);
+
+        ArrayList<Ingredients> list = new ArrayList<>();
+        for(int i=0;i<instructions.length;i++){
+            int num = i + 1;
+            String step = "STEP " + num;
+            Ingredients ing = new Ingredients(step, instructions[i]);
+            list.add(ing);
+        }
+        this.instructionsList = list;
+    }
+
+    public ArrayList<Ingredients> getInstructionsList() {
+        return instructionsList;
+    }
+
     public int getId() {
         return id;
     }
@@ -213,6 +269,29 @@ public class Recipe {
 
     public String getTagsString() {
         return tagsString;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(title);
+        parcel.writeString(imgpath);
+        parcel.writeStringArray(tags);
+        parcel.writeString(tagsString);
+        parcel.writeInt(protein);
+        parcel.writeInt(fat);
+        parcel.writeInt(carbs);
+        parcel.writeString(timeTaken);
+        parcel.writeInt(servings);
+        parcel.writeTypedList(ingredientsList);
+        parcel.writeString(ingredientsListString);
+        parcel.writeStringArray(instructions);
+        parcel.writeString(instructionsString);
     }
 }
 

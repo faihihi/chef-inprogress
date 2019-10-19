@@ -73,6 +73,33 @@ public class MainActivity extends AppCompatActivity {
         recipeDBHelper.insertData(title, imgpath, recipe.getTagsString(), protein, fat, carb, time, serves, recipe.getIngredientsListString(), recipe.getInstructionsString());
 
 
+        // Save all the recipes to the database
+        title = "Meatball Pasta";
+        imgpath = "https://smittenkitchendotcom.files.wordpress.com/2019/03/perfect-spaghetti-and-meatballs.jpg?w=1200";
+//        tags = {"vegetarian", "capable cook", "family dinner"};
+
+        protein = 18;
+        fat = 15;
+        carb = 66;
+        time = "20 mins";
+        serves = 4;
+        ingredients = new ArrayList<>();
+        ingredients.add(new Ingredients("Pasta", "300g"));
+        ingredients.add(new Ingredients("Minced beef", "400g"));
+        ingredients.add(new Ingredients("Ketchup", "120g"));
+        ingredients.add(new Ingredients("Salt", "1/2 cup"));
+//        ingredients.add(new Ingredients("Olive oil", "1/2 cup"));
+
+        String[] instructions2 = {
+                "Cook the pasta in a large saucepan of boiling salted water following the packet directions or until al dente. Drain, reserving 1/4 cup cooking liquid. Return pasta to saucepan.",
+                "Meanwhile process chickpeas, rocket, basil, pecorino, garlic, lemon juice and water until finely chopped. Season. Add oil in a slow, steady stream until well combined. Reserve 1/4 cup pesto mixture.",
+                "Add the cooking water, peppers and remaining pesto to the pasta. Toss well to combine. Divide the pasta mixture among serving bowls. Top each with a spoonful of reserved pesto. Sprinkle with extra pecorino and micro basil."
+        };
+
+        recipe = new Recipe(title, imgpath, tags, protein, fat, carb, time, serves, ingredients, instructions2);
+        recipeDBHelper.insertData(title, imgpath, recipe.getTagsString(), protein, fat, carb, time, serves, recipe.getIngredientsListString(), recipe.getInstructionsString());
+
+
         prefs = getSharedPreferences("au.edu.sydney.comp5216.chef_inprogress", MODE_PRIVATE);
     }
 

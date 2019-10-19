@@ -8,14 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,23 +20,43 @@ import java.util.List;
 
 import au.edu.sydney.comp5216.chef_inprogress.R;
 
-public class FavoriteAdapter extends ArrayAdapter<Favorite> implements Filterable {
+public class FavoriteAdapter extends BaseAdapter {
 
-    ArrayList<Favorite> arrayList,arrayList2;
-    //CustomFilter customFilter;
+    ArrayList<Favorite> favorites,favoritesAll;
+    private Context context;
 
-    public FavoriteAdapter(@NonNull Context context, ArrayList<Favorite> favorites) {
-        super(context, 0,favorites);
-        this.arrayList = favorites;
-        arrayList2 = new ArrayList<>(arrayList);
+    public FavoriteAdapter(Context mcontext, ArrayList<Favorite> arrayList){
+        context = mcontext;
+        favorites = arrayList;
+        favoritesAll = new ArrayList<>(favorites);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent){
+    public int getCount() {
+        try {
+            int size = favorites.size();
+            return size;
+        }catch (NullPointerException ex) {
+            return 0;
+        }
+    }
+
+    @Override
+    public Favorite getItem(int position) {
+        return favorites.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
         Favorite favorite = getItem(position);
 
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.favorite_item,parent,false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.favorite_item,parent,false);
         }
 
         // Lookup view for data population
@@ -51,18 +68,12 @@ public class FavoriteAdapter extends ArrayAdapter<Favorite> implements Filterabl
         title.setText(favorite.getTitle());
         time.setText(favorite.getTime());
 
-        new DownloadImageTask((ImageView) convertView.findViewById(R.id.picture))
+        new FavoriteAdapter.DownloadImageTask((ImageView) convertView.findViewById(R.id.picture))
                 .execute(favorite.getPic());
 
         return convertView;
     }
 
-//    public void filterList(ArrayList<Favorite> filteredList){
-//        arrayList = filteredList;
-//        notifyDataSetChanged();
-//    }
-
-    @Override
     public Filter getFilter(){
         return customFilter;
     }
@@ -74,11 +85,11 @@ public class FavoriteAdapter extends ArrayAdapter<Favorite> implements Filterabl
 
             if(constraint == null || constraint.length() == 0){
                 //filteredList.addAll(arrayList);
-                Toast.makeText(getContext(),"NOTHING FOUND",Toast.LENGTH_LONG);
+                Toast.makeText(context,"NOTHING FOUND",Toast.LENGTH_LONG);
             }else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
-                for(Favorite item: arrayList){
+                for(Favorite item: favorites){
                     if (item.getTitle().toLowerCase().contains(filterPattern)){
                         filteredList.add(item);
                     }
@@ -96,15 +107,19 @@ public class FavoriteAdapter extends ArrayAdapter<Favorite> implements Filterabl
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            arrayList2.clear();
-//            if(arrayList2.size()!=0){
-            arrayList2.addAll((ArrayList<Favorite>) results.values);
-            Log.v("publishResults",Integer.toString(arrayList2.size()));
-            notifyDataSetChanged();}
-        //}
+            favorites.clear();
+            if(results.count!=0) {
+                favorites.addAll((ArrayList<Favorite>) results.values);
+                Log.v("publishResults", Integer.toString(favorites.size()));
+                notifyDataSetChanged();
+            }else {
+                favorites.addAll(favoritesAll);
+                notifyDataSetChanged();
+            }
+        }
     };
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
         public DownloadImageTask(ImageView bmImage){
@@ -129,39 +144,4 @@ public class FavoriteAdapter extends ArrayAdapter<Favorite> implements Filterabl
         }
     }
 
-
-//    class CustomFilter extends Filter{
-//
-//        @Override
-//        protected FilterResults performFiltering(CharSequence constraint) {
-//            FilterResults results = new FilterResults();
-//
-//            if(constraint!=null && constraint.length()>0) {
-//                constraint = constraint.toString();
-//
-//                ArrayList<Favorite> filters = new ArrayList<>();
-//
-//                for (int i = 0; i < arrayList.size(); i++) {
-//                    if (arrayList.get(i).getTitle().contains(constraint)) {
-//                        Favorite favorite = new Favorite(arrayList.get(i).getTitle(), arrayList.get(i).getTime(), arrayList.get(i).getPic());
-//                        filters.add(favorite);
-//                    }
-//                }
-//
-//                results.count = filters.size();
-//                results.values = filters;
-//            }else {
-//                results.count = 0;
-//                results.values = null;
-//            }
-//
-//            return results;
-//        }
-//
-//        @Override
-//        protected void publishResults(CharSequence constraint, FilterResults results) {
-//            arrayList2 = (ArrayList<Favorite>) results.values;
-//            notifyDataSetChanged();
-//        }
-//    }
 }

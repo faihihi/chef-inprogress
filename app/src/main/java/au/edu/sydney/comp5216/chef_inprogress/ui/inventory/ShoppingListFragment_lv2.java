@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,14 +20,30 @@ public class ShoppingListFragment_lv2 extends Fragment {
     private ShoppinglistAdapter shoppinglistAdapter;
 
     ListView listView;
+    EditText editText;
+    ImageButton imageButton;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shoppinglist_lv2, container, false);
 
+        editText = (EditText) view.findViewById(R.id.addText);
+        imageButton = view.findViewById(R.id.addButton);
 
         shoppinglist.add(new ShoppinglistItem(false,"Apple"));
         shoppinglist.add(new ShoppinglistItem(true,"Banana"));
         shoppinglist.add(new ShoppinglistItem(false,"Cling Wrap"));
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String toAddString = editText.getText().toString();
+                if(toAddString != null && toAddString.length()>0){
+                    shoppinglist.add(new ShoppinglistItem(false,toAddString));
+                    editText.setText("");
+                    shoppinglistAdapter.notifyDataSetChanged();
+                }
+            }
+        });
 
         // Initialize the custom adapter and connect listView with adapter
         //itemsAdapter = new InventoryItemAdapter(getContext(), inventoryList);
@@ -33,7 +51,6 @@ public class ShoppingListFragment_lv2 extends Fragment {
         shoppinglistAdapter = new ShoppinglistAdapter(getContext(),shoppinglist);
         listView = (ListView) view.findViewById(R.id.shoppingListview);
         listView.setAdapter(shoppinglistAdapter);
-
 
         return view;
     }

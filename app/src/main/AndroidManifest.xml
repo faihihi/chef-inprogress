@@ -30,6 +30,9 @@
         </activity>
         <activity android:name="au.edu.sydney.comp5216.chef_inprogress.OcrCaptureActivity"
             android:label="Tap on Ingredients that you wish to add" />
+        <activity android:name="au.edu.sydney.comp5216.chef_inprogress.ui.home.RecipeDetails"
+            android:theme = "@style/AppTheme.NoActionBar"
+            android:label="Recipe Details" />
     </application>
 
 </manifest>

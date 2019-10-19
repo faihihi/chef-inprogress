@@ -1,4 +1,4 @@
-package au.edu.sydney.comp5216.chef_inprogress.ui.favorite;
+package au.edu.sydney.comp5216.chef_inprogress.ui.home;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -19,22 +19,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.sydney.comp5216.chef_inprogress.R;
+import au.edu.sydney.comp5216.chef_inprogress.Recipe;
 
-public class FavoriteAdapterTest extends BaseAdapter {
+public class HomeAdapter extends BaseAdapter {
 
-    ArrayList<Favorite> favorites,favoritesAll;
+    ArrayList<Recipe> recipes,recipesAll;
     private Context context;
 
-    public FavoriteAdapterTest(Context mcontext, ArrayList<Favorite> arrayList){
+    public HomeAdapter(Context mcontext, ArrayList<Recipe> arrayList){
         context = mcontext;
-        favorites = arrayList;
-        favoritesAll = new ArrayList<>(favorites);
+        recipes = arrayList;
+        recipesAll = new ArrayList<>();
     }
 
     @Override
     public int getCount() {
         try {
-            int size = favorites.size();
+            int size = recipes.size();
             return size;
         }catch (NullPointerException ex) {
             return 0;
@@ -42,21 +43,21 @@ public class FavoriteAdapterTest extends BaseAdapter {
     }
 
     @Override
-    public Favorite getItem(int position) {
-        return favorites.get(position);
+    public Recipe getItem(int i) {
+        return recipes.get(i);
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(int i) {
         return 0;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Favorite favorite = getItem(position);
+        Recipe recipe = getItem(position);
 
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.favorite_item,parent,false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.home_item,parent,false);
         }
 
         // Lookup view for data population
@@ -65,11 +66,11 @@ public class FavoriteAdapterTest extends BaseAdapter {
         TextView time = (TextView) convertView.findViewById(R.id.time);
 
         // Populate the data into the template view using the data object
-        title.setText(favorite.getTitle());
-        time.setText(favorite.getTime());
+        title.setText(recipe.getTitle());
+        time.setText(recipe.getTimeTaken());
 
-        new FavoriteAdapterTest.DownloadImageTask((ImageView) convertView.findViewById(R.id.picture))
-                .execute(favorite.getPic());
+        new HomeAdapter.DownloadImageTask((ImageView) convertView.findViewById(R.id.picture))
+                .execute(recipe.getImgpath());
 
         return convertView;
     }
@@ -81,7 +82,7 @@ public class FavoriteAdapterTest extends BaseAdapter {
     private Filter customFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<Favorite> filteredList = new ArrayList<>();
+            List<Recipe> filteredList = new ArrayList<>();
 
             if(constraint == null || constraint.length() == 0){
                 //filteredList.addAll(arrayList);
@@ -89,7 +90,7 @@ public class FavoriteAdapterTest extends BaseAdapter {
             }else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
-                for(Favorite item: favorites){
+                for(Recipe item: recipes){
                     if (item.getTitle().toLowerCase().contains(filterPattern)){
                         filteredList.add(item);
                     }
@@ -107,13 +108,13 @@ public class FavoriteAdapterTest extends BaseAdapter {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            favorites.clear();
+            recipes.clear();
             if(results.count!=0) {
-                favorites.addAll((ArrayList<Favorite>) results.values);
-                Log.v("publishResults", Integer.toString(favorites.size()));
+                recipes.addAll((ArrayList<Recipe>) results.values);
+                Log.v("publishResults", Integer.toString(recipes.size()));
                 notifyDataSetChanged();
             }else {
-                favorites.addAll(favoritesAll);
+                recipes.addAll(recipesAll);
                 notifyDataSetChanged();
             }
         }
@@ -143,5 +144,4 @@ public class FavoriteAdapterTest extends BaseAdapter {
             bmImage.setImageBitmap(result);
         }
     }
-
 }
