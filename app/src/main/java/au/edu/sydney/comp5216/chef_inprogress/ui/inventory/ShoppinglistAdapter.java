@@ -12,13 +12,19 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
+import au.edu.sydney.comp5216.chef_inprogress.GlobalVariables;
 import au.edu.sydney.comp5216.chef_inprogress.R;
+import au.edu.sydney.comp5216.chef_inprogress.User;
 
 public class ShoppinglistAdapter extends BaseAdapter {
 
     ArrayList<ShoppinglistItem> shoppinglistItems;
     Context context;
+
+    User currentUser;
 
     ShoppinglistAdapter(Context c, ArrayList<ShoppinglistItem> shoppinglist){
         context = c;
@@ -63,7 +69,6 @@ public class ShoppinglistAdapter extends BaseAdapter {
             public void onClick(View v) {
                 boolean newState = !shoppinglistItem.isChecked();
                 shoppinglistItem.checked = newState;
-
             }
         });
 
@@ -74,13 +79,13 @@ public class ShoppinglistAdapter extends BaseAdapter {
 
             @Override
             public boolean onLongClick(View v) {
-                Log.v("TESSSST","RUNNING");
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Delete the item")
                         .setMessage("Do you want to delete this item?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                Log.d("DELETE", String.valueOf(which));
                                 //remove item from shopping list
                                 //shoppinglistAdapter.notifyDataSetChanged();
                             }

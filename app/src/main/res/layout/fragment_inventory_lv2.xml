@@ -72,9 +72,8 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
-            android:contentDescription="@string/scan_btn_pic"
-            android:src="@drawable/ic_photo_camera_black_24dp"
-            android:visibility="visible" />
+            android:visibility="gone"
+            android:src="@drawable/ic_photo_camera_black_24dp" />
 
 
     </RelativeLayout>

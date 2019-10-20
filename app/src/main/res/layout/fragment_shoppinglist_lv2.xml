@@ -6,20 +6,11 @@
     android:layout_height="match_parent"
     android:padding="15dp">
 
-    <ListView
-        android:id="@+id/shoppingListview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
-        android:layout_marginTop="90dp"
-        android:longClickable="true"/>
-
     <EditText
         android:id="@+id/addText"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp"
+        android:layout_marginTop="90dp"
         android:padding="10dp"
         android:hint="New Item"
         android:background="#FFF"/>
@@ -27,11 +18,32 @@
     <ImageButton
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
+        android:layout_height="50dp"
         android:layout_alignTop="@+id/addText"
         android:layout_alignParentRight="true"
         android:layout_toEndOf="@+id/addText"
         android:background="@null"
         android:src="@drawable/baseline_add_black_18dp" />
+
+    <ListView
+        android:id="@+id/shoppingListview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="120dp"
+        android:longClickable="true" />
+
+    <Button
+        android:id="@+id/shopping_save"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:background="@color/colorPrimary"
+        android:text="SAVE"
+        android:textStyle="bold" />
+
+
 
 </RelativeLayout>

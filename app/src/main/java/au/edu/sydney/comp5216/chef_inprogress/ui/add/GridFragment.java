@@ -58,10 +58,6 @@ public class GridFragment extends Fragment {
     private int currentCategory;
     private boolean allfragments;
 
-    // Variables for OCR reader
-    private TextView statusMessage;
-    private TextView textValue;
-
     private static final int RC_OCR_CAPTURE = 9003;
     private static final String TAG = "GridFragment";
 
@@ -149,6 +145,7 @@ public class GridFragment extends Fragment {
         });
 
         scan_btn = (ImageView) view.findViewById(R.id.scan_btn);
+        scan_btn.setVisibility(View.VISIBLE);
         scan_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

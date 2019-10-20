@@ -4,7 +4,7 @@ public class ShoppinglistItem {
     boolean checked;
     String name;
 
-    ShoppinglistItem(boolean b, String n){
+    public ShoppinglistItem(boolean b, String n){
         checked = b;
         name = n;
     }
@@ -16,4 +16,5 @@ public class ShoppinglistItem {
     public String getName() {
         return name;
     }
+
 }

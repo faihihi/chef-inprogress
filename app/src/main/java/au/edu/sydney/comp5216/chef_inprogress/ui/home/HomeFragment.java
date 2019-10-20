@@ -33,7 +33,7 @@ public class HomeFragment extends Fragment {
     private RecipeDBHelper recipeDBHelper;
     private InventoryDBHelper inventoryDBHelper;
 
-    private ArrayList<Recipe> recipeArrayList, userRecipe;
+    private ArrayList<Recipe> recipeArrayList, userRecipe, intentList;
     private ArrayList<Inventory> userInventory;
 
     HomeAdapter arrayAdapter;
@@ -57,13 +57,15 @@ public class HomeFragment extends Fragment {
         userRecipe = getUserRecipe();
 
         pageTitle = (TextView) root.findViewById(R.id.title);
-
+        intentList = new ArrayList<>();
         // User has ingredients for the recipe in the database
         if(userRecipe.size() > 0){
             arrayAdapter = new HomeAdapter(getContext(), userRecipe);
+            intentList = userRecipe;
             pageTitle.setText("Here's your Recipes");
         } else{
             arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
+            intentList = recipeArrayList;
             pageTitle.setText("Recommended Recipes");
         }
 
@@ -76,26 +78,21 @@ public class HomeFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d("Check POSITION", String.valueOf(i));
                 Intent intent = new Intent(getActivity().getBaseContext(),
                         RecipeDetails.class);
-                intent.putExtra("title", recipeArrayList.get(i).getTitle());
-                intent.putExtra("image", recipeArrayList.get(i).getImgpath());
-                intent.putExtra("protein", recipeArrayList.get(i).getProtein());
-                intent.putExtra("fat", recipeArrayList.get(i).getFat());
-                intent.putExtra("carbs", recipeArrayList.get(i).getCarbs());
-                intent.putExtra("time", recipeArrayList.get(i).getTimeTaken());
-                intent.putExtra("serves", recipeArrayList.get(i).getServings());
-                intent.putExtra("ingredients", recipeArrayList.get(i).getIngredientsList());
-                intent.putExtra("instructions", recipeArrayList.get(i).getInstructionsString());
+                intent.putExtra("title", intentList.get(i).getTitle());
+                intent.putExtra("image", intentList.get(i).getImgpath());
+                intent.putExtra("protein", intentList.get(i).getProtein());
+                intent.putExtra("fat", intentList.get(i).getFat());
+                intent.putExtra("carbs", intentList.get(i).getCarbs());
+                intent.putExtra("time", intentList.get(i).getTimeTaken());
+                intent.putExtra("serves", intentList.get(i).getServings());
+                intent.putExtra("ingredients", intentList.get(i).getIngredientsList());
+                intent.putExtra("instructions", intentList.get(i).getInstructionsString());
                 getActivity().startActivity(intent);
             }
         });
-
-//        Log.d("test recipe tag", recipeArrayList.get(0).getTags()[0]);
-//        Log.d("INSTRUCTIONS", recipeArrayList.get(0).getInstructions()[0]);
-//        Log.d("INGREDIENTS", recipeArrayList.get(0).getIngredientsListString());
-//
-//        Log.d("Ingredients LIST", recipeArrayList.get(0).getIngredientsList().get(0).getDescription());
 
         searchTXT = root.findViewById(R.id.searchTxt);
         searchTXT.addTextChangedListener(new TextWatcher() {
@@ -112,7 +109,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                //filter(s.toString());
+//                filter(s.toString());
             }
         });
 
@@ -133,17 +130,14 @@ public class HomeFragment extends Fragment {
             for(Ingredients recipeIng : recipeIngredients){
                 String[] words = recipeIng.getIngredientsName().split("\\W+");
                 for(int i=0;i<words.length;i++){
-                    Log.d("YOOOOO", words[i]);
                     for(Inventory item: userInventory){
                         if(words[i].equalsIgnoreCase(item.getItemName())){
                             count++;
-                            Log.d("CHECK itemmm", item.getItemName());
                         }
                     }
                 }
             }
             if(recipeIngredients_total == count){
-                Log.d("THIS INGREDIENTS", recipe.getTitle());
                 result.add(recipe);
             }
         }

@@ -29,7 +29,7 @@ public class HomeAdapter extends BaseAdapter {
     public HomeAdapter(Context mcontext, ArrayList<Recipe> arrayList){
         context = mcontext;
         recipes = arrayList;
-        recipesAll = new ArrayList<>();
+        recipesAll = new ArrayList<>(recipes);
     }
 
     @Override
@@ -97,11 +97,11 @@ public class HomeAdapter extends BaseAdapter {
                 }
             }
 
-            Log.v("list",filteredList.get(0).getTitle());
+//            Log.v("list",filteredList.get(0).getTitle());
             FilterResults results = new FilterResults();
             results.values = filteredList;
             results.count = filteredList.size();
-            Log.v("value",Integer.toString(results.count));
+//            Log.v("value",Integer.toString(results.count));
 
             return results;
         }

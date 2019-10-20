@@ -1,10 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "au.edu.sydney.comp5216.chef_inprogress"
+        applicationId "au.edu.sydney.comp5216.regtest"
         minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
@@ -19,14 +20,16 @@ android {
     }
 }
 
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.android.gms:play-services-vision:15.0.0'
+    implementation 'com.google.android.gms:play-services-vision:19.0.0'
 
     implementation 'com.google.firebase:firebase-database:19.2.0'
     implementation 'com.google.firebase:firebase-storage:19.1.0'
     implementation 'com.google.firebase:firebase-analytics:17.2.0'
     implementation 'com.google.firebase:firebase-auth:19.1.0'
+    implementation 'com.firebaseui:firebase-ui-auth:4.2.0'
     implementation 'com.google.firebase:firebase-firestore:21.2.0'
     implementation 'com.google.android.material:material:1.1.0-alpha07'
     implementation 'com.muddzdev:styleabletoast:2.2.2'
