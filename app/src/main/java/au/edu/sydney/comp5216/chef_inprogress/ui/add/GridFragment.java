@@ -47,9 +47,10 @@ public class GridFragment extends Fragment {
     private MultiChoiceModeListener myModeListener;
     private ActionMode currentMode;
 
-    private ArrayList<Inventory> inventoryList, displayList, selectedItem, scannedListResult;
+    private ArrayList<Inventory> inventoryList, displayList, selectedItem, scannedListResult, allInventory;
     private InventoryAdapter itemsAdapter;
     private InventoryDBHelper inventoryDBHelper;
+    private UserDBHelper userDBHelper;
     private ArrayList<Integer> selectedPositions;
 
     private GridView gridView;
@@ -80,7 +81,25 @@ public class GridFragment extends Fragment {
         inventoryDBHelper = new InventoryDBHelper(getContext());
 
         inventoryList = new ArrayList<>();
-        inventoryList = inventoryDBHelper.getItemsNotInUserInventory();
+//        inventoryList = inventoryDBHelper.getItemsNotInUserInventory();
+
+        allInventory = new ArrayList<>();
+        allInventory = inventoryDBHelper.getAllData();
+
+        userDBHelper = new UserDBHelper(getContext());
+        User c = userDBHelper.getThisUser();
+        ArrayList<String> userItems = c.getInventory();
+        for(Inventory item : allInventory){
+            boolean exist = false;
+            for(String userItem: userItems){
+                if(userItem.equalsIgnoreCase(item.getItemName())){
+                    exist = true;
+                }
+            }
+            if(!exist){
+                inventoryList.add(item);
+            }
+        }
 
         displayList = new ArrayList<>();
         selectedItem = new ArrayList<>();
@@ -117,8 +136,8 @@ public class GridFragment extends Fragment {
                     c.getInventory().add(item.getItemName());
                 }
 
-                User currentUser = new User(c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getFavorites());
-                // Save favorites to firebase
+                User currentUser = new User(c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
+                // Save items to firebase
                 new FirebaseDatabaseHelper("user").updateUser("1",  currentUser, new FirebaseDatabaseHelper.DataStatus() {
                     @Override
                     public void DataisLoaded(List<User> users, List<String> keys) {}
@@ -132,6 +151,11 @@ public class GridFragment extends Fragment {
                     @Override
                     public void DataIsDeleted() {}
                 });
+
+                // Save items to local db
+                userDBHelper.deleteAll();
+                userDBHelper.insertData(c.getKey(), c.getName(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getCompletedDateStr(), c.getFavoriteStr());
+
 
                 for (Integer position : selectedPositions) {
                     inventoryDBHelper.saveToUserInventory(position);

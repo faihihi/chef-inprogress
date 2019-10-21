@@ -119,7 +119,7 @@ public class HomeAdapter extends BaseAdapter {
                     heartBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
 
                     c.getFavorites().add(recipes.get(position).getTitle());
-                    User currentUser = new User(c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getFavorites());
+                    User currentUser = new User(c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
 
                     // Save favorites to firebase
                     new FirebaseDatabaseHelper("user").updateUser("1",  currentUser, new FirebaseDatabaseHelper.DataStatus() {
@@ -138,7 +138,7 @@ public class HomeAdapter extends BaseAdapter {
 
                     // Save favorites to local db
                     userDBHelper.deleteAll();
-                    userDBHelper.insertData(c.getKey(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getFavoriteStr());
+                    userDBHelper.insertData(c.getKey(), c.getName(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getCompletedDateStr(), c.getFavoriteStr());
 
                 }
             }

@@ -33,6 +33,9 @@
         <activity android:name="au.edu.sydney.comp5216.chef_inprogress.ui.home.RecipeDetails"
             android:theme = "@style/AppTheme.NoActionBar"
             android:label="Recipe Details" />
+        <activity android:name="au.edu.sydney.comp5216.chef_inprogress.ui.profile.CalendarActivity"
+            android:theme = "@style/AppTheme.ModalTheme"
+            android:label="User Activity" />
     </application>
 
 </manifest>

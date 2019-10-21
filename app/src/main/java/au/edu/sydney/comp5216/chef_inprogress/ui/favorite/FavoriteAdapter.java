@@ -83,7 +83,7 @@ public class FavoriteAdapter extends BaseAdapter {
                 User c = userDBHelper.getThisUser();
 
                 c.getFavorites().remove(favorites.get(position).getTitle());
-                User currentUser = new User(c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getFavorites());
+                User currentUser = new User(c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
 
                 // Save favorites to firebase
                 new FirebaseDatabaseHelper("user").updateUser("1",  currentUser, new FirebaseDatabaseHelper.DataStatus() {
@@ -102,7 +102,7 @@ public class FavoriteAdapter extends BaseAdapter {
 
                 // Save favorites to local db
                 userDBHelper.deleteAll();
-                userDBHelper.insertData(c.getKey(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getFavoriteStr());
+                userDBHelper.insertData(c.getKey(), c.getName(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getCompletedDateStr(), c.getFavoriteStr());
             }
         });
 

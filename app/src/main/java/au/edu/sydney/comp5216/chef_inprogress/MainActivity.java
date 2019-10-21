@@ -52,23 +52,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void DataisLoaded(List<User> users, List<String> keys) {
                 User c = users.get(0);
-                User newUser = new User ("1", c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getFavorites());
+                User newUser = new User ("1", c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
 
-                userDBHelper.insertData(newUser.getKey(),newUser.getEmail(), newUser.getInventoryStr(), newUser.getShoppingStr(), newUser.getShoppingcheckStr(), newUser.getCompletedStr(), newUser.getFavoriteStr());
-                User testUser = userDBHelper.getThisUser();
-
-                ((GlobalVariables) MainActivity.this.getApplication()).setCurrentUser(newUser);
-                int keycount = 1;
-//                for (User user : users) {
-//                    if (user.getEmail().equalsIgnoreCase(loggedInEmail)) {
-//                        Log.d("Equal", "Founddd");
-//                        currentUser = user;
-//                        ((GlobalVariables) getActivity().getApplication()).setCurrentUser(currentUser);
-//                        ((GlobalVariables) getActivity().getApplication()).setCurrentUserKey(String.valueOf(keycount));
-//                    }
-//                    keycount++;
-//                }
-
+                userDBHelper.insertData(newUser.getKey(), newUser.getName(), newUser.getEmail(), newUser.getInventoryStr(), newUser.getShoppingStr(), newUser.getShoppingcheckStr(), newUser.getCompletedStr(), newUser.getCompletedDateStr(), newUser.getFavoriteStr());
             }
 
             @Override

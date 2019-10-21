@@ -23,7 +23,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE user (ID INTEGER PRIMARY KEY AUTOINCREMENT, FBKEY STRING, EMAIL TEXT, INVENTORY TEXT, SHOPPINGLIST TEXT, SHOPPINGCHECK TEXT, COMPLETED TEXT, FAVORITES TEXT)");
+        db.execSQL("CREATE TABLE user (ID INTEGER PRIMARY KEY AUTOINCREMENT, FBKEY STRING, NAME TEXT, EMAIL TEXT, INVENTORY TEXT, SHOPPINGLIST TEXT, SHOPPINGCHECK TEXT, COMPLETED TEXT, COMPLETEDDATE TEXT, FAVORITES TEXT)");
 
     }
 
@@ -49,18 +49,20 @@ public class UserDBHelper extends SQLiteOpenHelper {
      * @param favorites
      * @return
      */
-    public boolean insertData(String fbkey, String email, String inventory, String shopping, String shoppingcheck, String completed, String favorites){
+    public boolean insertData(String fbkey, String name, String email, String inventory, String shopping, String shoppingcheck, String completed, String completeddate, String favorites){
         SQLiteDatabase db = this.getWritableDatabase();
 //        db.execSQL("DROP TABLE IF EXISTS user");
 //        onCreate(db);
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("FBKEY",fbkey);
+        contentValues.put("NAME", name);
         contentValues.put("EMAIL",email);
         contentValues.put("INVENTORY",inventory);
         contentValues.put("SHOPPINGLIST", shopping);
         contentValues.put("SHOPPINGCHECK", shoppingcheck);
         contentValues.put("COMPLETED", completed);
+        contentValues.put("COMPLETEDDATE", completeddate);
         contentValues.put("FAVORITES", favorites);
 
         long result = db.insert("user",null,contentValues);
@@ -82,14 +84,16 @@ public class UserDBHelper extends SQLiteOpenHelper {
         while(cursor.moveToNext()){
             int id = cursor.getInt(0);
             String key = cursor.getString(1);
-            String email = cursor.getString(2);
-            String inventory = cursor.getString(3);
-            String shopping = cursor.getString(4);
-            String shoppingcheck = cursor.getString(5);
-            String completed = cursor.getString(6);
-            String favorites = cursor.getString(7);
+            String name = cursor.getString(2);
+            String email = cursor.getString(3);
+            String inventory = cursor.getString(4);
+            String shopping = cursor.getString(5);
+            String shoppingcheck = cursor.getString(6);
+            String completed = cursor.getString(7);
+            String completeddate = cursor.getString(8);
+            String favorites = cursor.getString(9);
 
-            user = new User(key, email, inventory, shopping, shoppingcheck, completed, favorites);
+            user = new User(key, name, email, inventory, shopping, shoppingcheck, completed, completeddate, favorites);
 
         }
 

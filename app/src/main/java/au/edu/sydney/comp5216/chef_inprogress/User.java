@@ -16,6 +16,7 @@ import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ShoppinglistItem;
 public class User {
     private String key;
     private String email;
+    private String name;
 
     private ArrayList<Inventory> userInventory;
     private ArrayList<String> inventory;
@@ -25,6 +26,7 @@ public class User {
 
     // Recipes that user have made
     private ArrayList<String> completedrecipe;
+    private ArrayList<String> completedDate;
 
     private ArrayList<String> favorites;
 
@@ -33,6 +35,7 @@ public class User {
     private String shoppingStr;
     private String shoppingcheckStr;
     private String completedStr;
+    private String completedDateStr;
     private String favoriteStr;
 
     private static String strSeparator = "__,__";
@@ -41,35 +44,31 @@ public class User {
     public User(){}
 
     // Constructor for local database
-    public User(String key, String email, String inventoryStr, String shoppingStr, String shoppingcheckStr, String completedStr, String favoriteStr){
+    public User(String key, String name, String email, String inventoryStr, String shoppingStr, String shoppingcheckStr, String completedStr, String completedDateStr, String favoriteStr){
         this.key = key;
+        this.name = name;
         this.email = email;
         this.inventoryStr = inventoryStr;
         this.inventory = convertStringToArray(inventoryStr);
 
         this.shoppingStr = shoppingStr;
         this.shoppinglist = convertStringToArray(shoppingStr);
-
         this.shoppingcheckStr = shoppingcheckStr;
         this.shoppinglistcheck = convertStringToIntArray(shoppingcheckStr);
 
-//        Gson gson = new Gson();
-//        String str = gson.toJson(this.shoppinglist);
-//
-//        gson = new GsonBuilder().setPrettyPrinting().create();
-//        JsonParser jp = new JsonParser();
-//        JsonElement je = jp.parse(str);
-//        String prettyJsonString = gson.toJson(je);
-//        Log.d("LIST FROM USER", prettyJsonString);
         this.completedStr = completedStr;
         this.completedrecipe = convertStringToArray(completedStr);
+        this.completedDateStr = completedDateStr;
+        this.completedDate = convertStringToArray(completedDateStr);
+
         this.favoriteStr = favoriteStr;
         this.favorites = convertStringToArray(favoriteStr);
     }
 
     // Constructor for firebase: when retrieving data
-    public User(String key, String email, ArrayList<String> inventory, ArrayList<String> shoppinglist, ArrayList<Integer> shoppinglistcheck, ArrayList<String> completedrecipe, ArrayList<String> favorites) {
+    public User(String key, String name, String email, ArrayList<String> inventory, ArrayList<String> shoppinglist, ArrayList<Integer> shoppinglistcheck, ArrayList<String> completedrecipe, ArrayList<String> completedDate, ArrayList<String> favorites) {
         this.key = key;
+        this.name = name;
         this.email = email;
         this.inventory = inventory;
         this.inventoryStr = convertArrayToString(inventory);
@@ -82,18 +81,22 @@ public class User {
 
         this.completedrecipe = completedrecipe;
         this.completedStr = convertArrayToString(completedrecipe);
+        this.completedDate = completedDate;
+        this.completedDateStr = convertArrayToString(completedDate);
 
         this.favorites = favorites;
         this.favoriteStr = convertArrayToString(favorites);
     }
 
     // Constructor for firebase: when posting data
-    public User(String email, ArrayList<String> inventory, ArrayList<String> shoppinglist, ArrayList<Integer> shoppinglistcheck, ArrayList<String> completedrecipe, ArrayList<String> favorites){
+    public User(String name, String email, ArrayList<String> inventory, ArrayList<String> shoppinglist, ArrayList<Integer> shoppinglistcheck, ArrayList<String> completedrecipe, ArrayList<String> completedDate, ArrayList<String> favorites){
+        this.name = name;
         this.email = email;
         this.inventory = inventory;
         this.shoppinglist = shoppinglist;
         this.shoppinglistcheck = shoppinglistcheck;
         this.completedrecipe = completedrecipe;
+        this.completedDate = completedDate;
         this.favorites = favorites;
     }
 
@@ -218,7 +221,17 @@ public class User {
         return strSeparator;
     }
 
+    public ArrayList<String> getCompletedDate() {
+        return completedDate;
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getCompletedDateStr() {
+        return completedDateStr;
+    }
 
     /** SETTERS **/
     public void setKey(String key) {
@@ -275,5 +288,17 @@ public class User {
 
     public static void setStrSeparator(String strSeparator) {
         User.strSeparator = strSeparator;
+    }
+
+    public void setCompletedDate(ArrayList<String> completedDate) {
+        this.completedDate = completedDate;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCompletedDateStr(String completedDateStr) {
+        this.completedDateStr = completedDateStr;
     }
 }

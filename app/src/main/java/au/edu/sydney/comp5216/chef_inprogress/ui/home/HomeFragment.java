@@ -51,7 +51,6 @@ public class HomeFragment extends Fragment {
     EditText searchTXT;
     TextView pageTitle;
 
-    User currentUser;
     private ArrayList<String> favorites;
     private String loggedInEmail;
     boolean finished = false;
