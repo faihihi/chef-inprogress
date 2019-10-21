@@ -1,218 +1,76 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Type;
-import java.sql.Array;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class Recipe implements Parcelable {
+public class Recipe {
     private int id;
     private String title;
     private String imgpath;
 
     // Tags ex. vegetarian, gluten-free
-    private String[] tags;
-    private String tagsString;
+    private ArrayList<String> tags;
 
     // Nutrition intake in gram
     private int protein;
     private int fat;
-    private int carbs;
+    private int carb;
 
     // Details
     private String timeTaken;
     private int servings;
 
     // Ingredients
+    private ArrayList<String> ingredientFB;
     private ArrayList<Ingredients> ingredientsList;
-    private String ingredientsListString;
 
     // Instruction
-    private String[] instructions;
-    private String instructionsString;
-    private ArrayList<Ingredients> instructionsList;
+    private ArrayList<String> instructions;
 
-    private static String strSeparator = "__,__";
+    // User favorite flat
+    private boolean userFavorite;
 
     public Recipe(){}
 
-    public Recipe(String title){
-        this.title = title;
-    }
-
-    public Recipe(String title, String imgpath, String[] tags, int protein, int fat, int carbs, String timeTaken, int servings, ArrayList<Ingredients> ingredientsList, String[] instructions){
+    public Recipe(String title, String imgpath, ArrayList<String> tags, int protein, int fat, int carbs, String timeTaken, int servings, ArrayList<String> ingredientFB, ArrayList<String> instructions) {
         this.title = title;
         this.imgpath = imgpath;
         this.tags = tags;
-        this.tagsString = convertArrayToString(tags);
         this.protein = protein;
         this.fat = fat;
-        this.carbs = carbs;
+        this.carb = carbs;
         this.timeTaken = timeTaken;
         this.servings = servings;
-        this.ingredientsList = ingredientsList;
-        this.ingredientsListString = getJSONStringIngredient(ingredientsList);
+        this.ingredientFB = ingredientFB;
         this.instructions = instructions;
-        this.instructionsString = convertArrayToString(instructions);
     }
 
-    public Recipe(String title, String imgpath, String tags, int protein, int fat, int carbs, String timeTaken, int servings, String ingredientsList, String instructions){
-        this.title = title;
-        this.imgpath = imgpath;
-        this.tagsString = tags;
-        this.protein = protein;
-        this.fat = fat;
-        this.carbs = carbs;
-        this.timeTaken = timeTaken;
-        this.servings = servings;
-        this.ingredientsListString = ingredientsList;
-        this.instructionsString = instructions;
-
-        this.tags = convertStringToArray(tagsString);
-        this.ingredientsList = convertJSONtoList(ingredientsListString);
-        this.instructions = convertStringToArray(instructions);
-    }
-
-    protected Recipe(Parcel in) {
-        id = in.readInt();
-        title = in.readString();
-        imgpath = in.readString();
-        tags = in.createStringArray();
-        tagsString = in.readString();
-        protein = in.readInt();
-        fat = in.readInt();
-        carbs = in.readInt();
-        timeTaken = in.readString();
-        servings = in.readInt();
-        ingredientsList = in.createTypedArrayList(Ingredients.CREATOR);
-        ingredientsListString = in.readString();
-        instructions = in.createStringArray();
-        instructionsString = in.readString();
-    }
-
-    public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
-        @Override
-        public Recipe createFromParcel(Parcel in) {
-            return new Recipe(in);
-        }
-
-        @Override
-        public Recipe[] newArray(int size) {
-            return new Recipe[size];
-        }
-    };
-
-    public static String convertArrayToString(String[] array){
-        String str = "";
-        for (int i = 0;i<array.length; i++) {
-            str = str+array[i];
-            // Do not append comma at the end of last element
-            if(i<array.length-1){
-                str = str+strSeparator;
-            }
-        }
-        return str;
-    }
-    public static String[] convertStringToArray(String str){
-        String[] arr = str.split(strSeparator);
-        return arr;
-    }
-
-    public ArrayList<Ingredients> convertJSONtoList(String str){
+    public ArrayList<Ingredients> setInstructionsString(ArrayList<String> instructions) {
         ArrayList<Ingredients> list = new ArrayList<>();
-        JSONArray jsonArr = null;
-        try {
-            jsonArr = new JSONArray(str);
-            for (int i = 0; i < jsonArr.length(); i++) {
-                JSONObject jsonObj = null;
-                jsonObj = jsonArr.getJSONObject(i);
-                Ingredients item = new Ingredients(jsonObj.getString("ingredientsName"),jsonObj.getString("description"));
-
-                list.add(item);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        for(int i=0;i<instructions.size();i++){
+            int num = i + 1;
+            String step = "STEP " + num;
+            Ingredients ing = new Ingredients(step, instructions.get(i));
+            list.add(ing);
         }
-
         return list;
     }
 
-    public String getJSONString(ArrayList<String> strList){
-        Gson gson = new Gson();
-        String str = gson.toJson(strList);
-
-        return str;
-    }
-
-    public String getJSONStringIngredient(ArrayList<Ingredients> strList){
-        Gson gson = new Gson();
-        String str = gson.toJson(strList);
-
-        return str;
-    }
-
-    public void setImgpath(String imgpath) {
-        this.imgpath = imgpath;
-    }
-
-    public void setTags(String[] tags) {
-        this.tags = tags;
-        tagsString = convertArrayToString(tags);
-    }
-
-    public void setNutritions(int protien, int fat, int carbs){
-        this.protein = protien;
-        this.fat = fat;
-        this.carbs = carbs;
-    }
-
-    public void setDetails(String timeTaken, int servings){
-        this.timeTaken = timeTaken;
-        this.servings = servings;
-    }
-
-    public void setIngredientsList(ArrayList<Ingredients> ingredientsList) {
-        this.ingredientsList = ingredientsList;
-        this.ingredientsListString = getJSONStringIngredient(ingredientsList);
-    }
-
-    public void setInstructions(String[] instructions) {
-        this.instructions = instructions;
-        this.instructionsString = convertArrayToString(instructions);
-    }
-
-    public void setIngredientsListString(String ingredientsListString) {
-        this.ingredientsListString = ingredientsListString;
-    }
-
-    public void setInstructionsString(String instructionsString) {
-        this.instructionsString = instructionsString;
-        this.instructions = convertStringToArray(instructionsString);
-
+    public ArrayList<Ingredients> setIngredientsString(ArrayList<String> ingredients){
         ArrayList<Ingredients> list = new ArrayList<>();
-        for(int i=0;i<instructions.length;i++){
-            int num = i + 1;
-            String step = "STEP " + num;
-            Ingredients ing = new Ingredients(step, instructions[i]);
-            list.add(ing);
+        for(String word : ingredients){
+            String[] temp = word.split("-");
+            list.add(new Ingredients(temp[0], temp[1]));
         }
-        this.instructionsList = list;
+        this.ingredientsList = ingredientsList;
+        return list;
     }
 
-    public ArrayList<Ingredients> getInstructionsList() {
-        return instructionsList;
+    public ArrayList<Ingredients> getIngredientsList() {
+        return ingredientsList;
     }
 
     public int getId() {
@@ -227,7 +85,7 @@ public class Recipe implements Parcelable {
         return imgpath;
     }
 
-    public String[] getTags() {
+    public ArrayList<String> getTags() {
         return tags;
     }
 
@@ -239,8 +97,8 @@ public class Recipe implements Parcelable {
         return fat;
     }
 
-    public int getCarbs() {
-        return carbs;
+    public int getCarb() {
+        return carb;
     }
 
     public String getTimeTaken() {
@@ -251,47 +109,68 @@ public class Recipe implements Parcelable {
         return servings;
     }
 
-    public ArrayList<Ingredients> getIngredientsList() {
-        return ingredientsList;
+    public ArrayList<String> getIngredientFB() {
+        return ingredientFB;
     }
 
-    public String[] getInstructions() {
+    public ArrayList<String> getInstructions() {
         return instructions;
     }
 
-    public String getIngredientsListString() {
-        return ingredientsListString;
+    public boolean getUserFavorite(){
+        return userFavorite;
     }
 
-    public String getInstructionsString() {
-        return instructionsString;
+    public void setIngredientsList(ArrayList<Ingredients> ingredientsList) {
+        this.ingredientsList = ingredientsList;
     }
 
-    public String getTagsString() {
-        return tagsString;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(id);
-        parcel.writeString(title);
-        parcel.writeString(imgpath);
-        parcel.writeStringArray(tags);
-        parcel.writeString(tagsString);
-        parcel.writeInt(protein);
-        parcel.writeInt(fat);
-        parcel.writeInt(carbs);
-        parcel.writeString(timeTaken);
-        parcel.writeInt(servings);
-        parcel.writeTypedList(ingredientsList);
-        parcel.writeString(ingredientsListString);
-        parcel.writeStringArray(instructions);
-        parcel.writeString(instructionsString);
+    public void setImgpath(String imgpath) {
+        this.imgpath = imgpath;
+    }
+
+    public void setTags(ArrayList<String> tags) {
+        this.tags = tags;
+    }
+
+    public void setProtein(int protein) {
+        this.protein = protein;
+    }
+
+    public void setFat(int fat) {
+        this.fat = fat;
+    }
+
+    public void setCarb(int carb) {
+        this.carb = carb;
+    }
+
+    public void setTimeTaken(String timeTaken) {
+        this.timeTaken = timeTaken;
+    }
+
+    public void setServings(int servings) {
+        this.servings = servings;
+    }
+
+    public void setIngredientFB(ArrayList<String> ingredientFB) {
+        this.ingredientFB = ingredientFB;
+    }
+
+    public void setInstructions(ArrayList<String> instructions) {
+        this.instructions = instructions;
+    }
+
+    public void setUserFavorite(boolean userFavorite) {
+        this.userFavorite = userFavorite;
     }
 }
 

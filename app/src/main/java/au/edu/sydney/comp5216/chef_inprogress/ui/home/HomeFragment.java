@@ -1,6 +1,8 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.home;
 
+import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,8 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.google.android.gms.tasks.Tasks;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -21,17 +25,24 @@ import androidx.lifecycle.ViewModelProviders;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
+import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
+import au.edu.sydney.comp5216.chef_inprogress.FirebaseRecipeDBHelper;
+import au.edu.sydney.comp5216.chef_inprogress.GlobalVariables;
 import au.edu.sydney.comp5216.chef_inprogress.Ingredients;
 import au.edu.sydney.comp5216.chef_inprogress.Inventory;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
+import au.edu.sydney.comp5216.chef_inprogress.MainActivity;
 import au.edu.sydney.comp5216.chef_inprogress.R;
 import au.edu.sydney.comp5216.chef_inprogress.Recipe;
 import au.edu.sydney.comp5216.chef_inprogress.RecipeDBHelper;
+import au.edu.sydney.comp5216.chef_inprogress.User;
+import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
 public class HomeFragment extends Fragment {
-    private RecipeDBHelper recipeDBHelper;
     private InventoryDBHelper inventoryDBHelper;
+    private UserDBHelper userDBHelper;
 
     private ArrayList<Recipe> recipeArrayList, userRecipe, intentList;
     private ArrayList<Inventory> userInventory;
@@ -40,15 +51,37 @@ public class HomeFragment extends Fragment {
     EditText searchTXT;
     TextView pageTitle;
 
+    User currentUser;
+    private ArrayList<String> favorites;
+    private String loggedInEmail;
+    boolean finished = false;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        recipeDBHelper = new RecipeDBHelper(getContext());
         inventoryDBHelper = new InventoryDBHelper(getContext());
+        userDBHelper = new UserDBHelper(getContext());
+//        currentUser = userDBHelper.getThisUser();
+
 
         recipeArrayList = new ArrayList<>();
-        recipeArrayList = recipeDBHelper.getAllData();
+
+        // Uncomment after
+        new FirebaseRecipeDBHelper().getAllRecipe(new FirebaseRecipeDBHelper.DataStatus() {
+            @Override
+            public void RecipeisLoaded(List<Recipe> recipes, List<String> keys) {
+                for (Recipe recipe : recipes) {
+                    recipeArrayList.add(recipe);
+                    arrayAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void DataIsUpdated() {
+
+            }
+        });
 
         userInventory = new ArrayList<>();
         userInventory = inventoryDBHelper.getItemsInUserInventory();
@@ -59,17 +92,16 @@ public class HomeFragment extends Fragment {
         pageTitle = (TextView) root.findViewById(R.id.title);
         intentList = new ArrayList<>();
         // User has ingredients for the recipe in the database
-        if(userRecipe.size() > 0){
+        if (userRecipe.size() > 0) {
             arrayAdapter = new HomeAdapter(getContext(), userRecipe);
             intentList = userRecipe;
             pageTitle.setText("Here's your Recipes");
-        } else{
+        } else {
             arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
             intentList = recipeArrayList;
             pageTitle.setText("Recommended Recipes");
         }
 
-//        arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
         ListView listView = root.findViewById(R.id.recipeList);
 
         listView.setTextFilterEnabled(true);
@@ -85,11 +117,12 @@ public class HomeFragment extends Fragment {
                 intent.putExtra("image", intentList.get(i).getImgpath());
                 intent.putExtra("protein", intentList.get(i).getProtein());
                 intent.putExtra("fat", intentList.get(i).getFat());
-                intent.putExtra("carbs", intentList.get(i).getCarbs());
+                intent.putExtra("carbs", intentList.get(i).getCarb());
                 intent.putExtra("time", intentList.get(i).getTimeTaken());
                 intent.putExtra("serves", intentList.get(i).getServings());
-                intent.putExtra("ingredients", intentList.get(i).getIngredientsList());
-                intent.putExtra("instructions", intentList.get(i).getInstructionsString());
+
+                intent.putExtra("ingredients", intentList.get(i).getIngredientFB());
+                intent.putExtra("instructions", intentList.get(i).getInstructions());
                 getActivity().startActivity(intent);
             }
         });
@@ -109,10 +142,8 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-//                filter(s.toString());
             }
         });
-
 
 
         return root;
@@ -121,28 +152,30 @@ public class HomeFragment extends Fragment {
     private ArrayList<Recipe> getUserRecipe() {
         ArrayList<Recipe> result = new ArrayList<>();
 
-        for(Recipe recipe : recipeArrayList){
+        for (Recipe recipe : recipeArrayList) {
             ArrayList<Ingredients> recipeIngredients = new ArrayList<>();
             recipeIngredients = recipe.getIngredientsList();
 
             int recipeIngredients_total = recipeIngredients.size();
             int count = 0;
-            for(Ingredients recipeIng : recipeIngredients){
+            for (Ingredients recipeIng : recipeIngredients) {
                 String[] words = recipeIng.getIngredientsName().split("\\W+");
-                for(int i=0;i<words.length;i++){
-                    for(Inventory item: userInventory){
-                        if(words[i].equalsIgnoreCase(item.getItemName())){
+                for (int i = 0; i < words.length; i++) {
+                    for (Inventory item : userInventory) {
+                        if (words[i].equalsIgnoreCase(item.getItemName())) {
                             count++;
                         }
                     }
                 }
             }
-            if(recipeIngredients_total == count){
+            if (recipeIngredients_total == count) {
                 result.add(recipe);
             }
         }
-
-
         return result;
     }
+
+
+
+
 }

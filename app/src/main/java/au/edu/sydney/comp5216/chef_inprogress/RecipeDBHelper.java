@@ -108,7 +108,7 @@ public class RecipeDBHelper extends SQLiteOpenHelper {
             String ingredients = cursor.getString(9);
             String instructions= cursor.getString(10);
 
-            Recipe item = new Recipe(title, imgpath, tags, protein, fat, carb, time, serves, ingredients, instructions);
+//            Recipe item = new Recipe(title, imgpath, tags, protein, fat, carb, time, serves, ingredients, instructions);
 
 //            Gson gson = new Gson();
 //            Type type = new TypeToken<ArrayList<String>>() {}.getType();
@@ -122,7 +122,7 @@ public class RecipeDBHelper extends SQLiteOpenHelper {
 //            Recipe item = new Recipe(title, imgpath, tagsList, protein, fat, carb, time, serves, ingredientsList, instructionsList);
 
 
-            arrayList.add(item);
+//            arrayList.add(item);
         }
 
         return arrayList;

@@ -14,12 +14,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 
+import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
 import au.edu.sydney.comp5216.chef_inprogress.R;
 import au.edu.sydney.comp5216.chef_inprogress.Recipe;
+import au.edu.sydney.comp5216.chef_inprogress.User;
+import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
 public class HomeAdapter extends BaseAdapter {
 
@@ -31,6 +40,8 @@ public class HomeAdapter extends BaseAdapter {
         recipes = arrayList;
         recipesAll = new ArrayList<>(recipes);
     }
+
+
 
     @Override
     public int getCount() {
@@ -53,8 +64,8 @@ public class HomeAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        Recipe recipe = getItem(position);
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        final Recipe recipe = getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.home_item,parent,false);
@@ -65,12 +76,73 @@ public class HomeAdapter extends BaseAdapter {
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView time = (TextView) convertView.findViewById(R.id.time);
 
+        UserDBHelper userDBHelper = new UserDBHelper(context);
+        User c = userDBHelper.getThisUser();
+
+        ArrayList<String> favorites = c.getFavorites();
+        boolean checkIfAlreadyFav = false;
+        for(String fav: favorites){
+            if(recipes.get(position).getTitle().equalsIgnoreCase(fav)){
+                // Favorite already exist
+                checkIfAlreadyFav = true;
+            }
+        }
+        final ImageView heartBtn = (ImageView) convertView.findViewById(R.id.heart_btn);
+        if(checkIfAlreadyFav){
+            heartBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+        }
+
         // Populate the data into the template view using the data object
         title.setText(recipe.getTitle());
         time.setText(recipe.getTimeTaken());
 
         new HomeAdapter.DownloadImageTask((ImageView) convertView.findViewById(R.id.picture))
                 .execute(recipe.getImgpath());
+
+        heartBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                UserDBHelper userDBHelper = new UserDBHelper(context);
+                User c = userDBHelper.getThisUser();
+
+                ArrayList<String> favorites = c.getFavorites();
+                boolean checkIfAlreadyFav = false;
+                for(String fav: favorites){
+                    if(recipes.get(position).getTitle().equalsIgnoreCase(fav)){
+                        // Favorite already exist
+                        checkIfAlreadyFav = true;
+                    }
+                }
+
+                if(!checkIfAlreadyFav){
+                    heartBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+
+                    c.getFavorites().add(recipes.get(position).getTitle());
+                    User currentUser = new User(c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getFavorites());
+
+                    // Save favorites to firebase
+                    new FirebaseDatabaseHelper("user").updateUser("1",  currentUser, new FirebaseDatabaseHelper.DataStatus() {
+                        @Override
+                        public void DataisLoaded(List<User> users, List<String> keys) {}
+
+                        @Override
+                        public void DataIsInserted() {}
+
+                        @Override
+                        public void DataIsUpdated() {}
+
+                        @Override
+                        public void DataIsDeleted() {}
+                    });
+
+                    // Save favorites to local db
+                    userDBHelper.deleteAll();
+                    userDBHelper.insertData(c.getKey(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getFavoriteStr());
+
+                }
+            }
+        });
 
         return convertView;
     }

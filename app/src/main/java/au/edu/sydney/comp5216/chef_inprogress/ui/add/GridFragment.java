@@ -28,15 +28,19 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.muddzdev.styleabletoast.StyleableToast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 
+import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
 import au.edu.sydney.comp5216.chef_inprogress.GlobalVariables;
 import au.edu.sydney.comp5216.chef_inprogress.Inventory;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
 import au.edu.sydney.comp5216.chef_inprogress.OcrCaptureActivity;
 import au.edu.sydney.comp5216.chef_inprogress.R;
+import au.edu.sydney.comp5216.chef_inprogress.User;
+import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
 public class GridFragment extends Fragment {
     CategoryPagerAdapter categoryPagerAdapter;
@@ -103,10 +107,32 @@ public class GridFragment extends Fragment {
 
                 StyleableToast.makeText(getContext(), "Saved items to Inventory", Toast.LENGTH_SHORT).show();
 
+                UserDBHelper userDBHelper = new UserDBHelper(getContext());
+                User c = userDBHelper.getThisUser();
+
                 for(Inventory item: selectedItem){
                     displayList.remove(item);
                     itemsAdapter.notifyDataSetChanged();
+
+                    c.getInventory().add(item.getItemName());
                 }
+
+                User currentUser = new User(c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getFavorites());
+                // Save favorites to firebase
+                new FirebaseDatabaseHelper("user").updateUser("1",  currentUser, new FirebaseDatabaseHelper.DataStatus() {
+                    @Override
+                    public void DataisLoaded(List<User> users, List<String> keys) {}
+
+                    @Override
+                    public void DataIsInserted() {}
+
+                    @Override
+                    public void DataIsUpdated() {}
+
+                    @Override
+                    public void DataIsDeleted() {}
+                });
+
                 for (Integer position : selectedPositions) {
                     inventoryDBHelper.saveToUserInventory(position);
                 }

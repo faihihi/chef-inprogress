@@ -13,13 +13,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
+import au.edu.sydney.comp5216.chef_inprogress.FirebaseRecipeDBHelper;
 import au.edu.sydney.comp5216.chef_inprogress.R;
+import au.edu.sydney.comp5216.chef_inprogress.Recipe;
+import au.edu.sydney.comp5216.chef_inprogress.User;
+import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
 
 public class FavoriteFragment extends Fragment{
+    private UserDBHelper userDBHelper;
 
     private ArrayList<Favorite> arrayList;
+    private ArrayList<Recipe> favoriteList;
+    private ArrayList<String> titleList;
     FavoriteAdapter arrayAdapter;
 
     EditText searchTXT;
@@ -31,13 +40,31 @@ public class FavoriteFragment extends Fragment{
         View root = inflater.inflate(R.layout.fragment_favorite, container, false);
         searchTXT = root.findViewById(R.id.searchTxt);
 
+        userDBHelper = new UserDBHelper(getContext());
+        User c = userDBHelper.getThisUser();
+        titleList = c.getFavorites();
 
         arrayList = new ArrayList<>();
+        favoriteList = new ArrayList<>();
 
-        arrayList.add(new Favorite("Fried chicken","11 min","https://food.fnr.sndimg.com/content/dam/images/food/fullset/2012/11/2/0/DV1510H_fried-chicken-recipe-10_s4x3.jpg.rend.hgtvcom.826.620.suffix/1568222255998.jpeg"));
-        arrayList.add(new Favorite("Salad","5 min","https://www.diabetesfoodhub.org/system/thumbs/system/images/recipes/931-diabetic-powerhouse-kale-salad_designed-for-one_071118_3547183137.jpg"));
-        arrayList.add(new Favorite("Pizza","30 min","https://www.biggerbolderbaking.com/wp-content/uploads/2019/07/15-Minute-Pizza-WS-Thumbnail.png"));
-        arrayList.add(new Favorite("Burger","15 min","https://media1.s-nbcnews.com/j/newscms/2019_21/2870431/190524-classic-american-cheeseburger-ew-207p_d9270c5c545b30ea094084c7f2342eb4.fit-760w.jpg"));
+        new FirebaseRecipeDBHelper().getAllRecipe(new FirebaseRecipeDBHelper.DataStatus() {
+            @Override
+            public void RecipeisLoaded(List<Recipe> recipes, List<String> keys) {
+                for (Recipe recipe : recipes) {
+                    for(String title: titleList){
+                        if(recipe.getTitle().equalsIgnoreCase(title)){
+                            arrayList.add(new Favorite(recipe.getTitle(), recipe.getTimeTaken(), recipe.getImgpath()));
+                            arrayAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void DataIsUpdated() {
+
+            }
+        });
 
         arrayAdapter = new FavoriteAdapter(getContext(), arrayList);
         ListView listView = root.findViewById(R.id.favouriteList);

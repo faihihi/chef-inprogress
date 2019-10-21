@@ -1,17 +1,15 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
-import android.app.ActionBar;
+
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -26,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     SharedPreferences prefs = null;
     private InventoryDBHelper inventoryDBHelper;
-    private RecipeDBHelper recipeDBHelper;
+    private UserDBHelper userDBHelper;
+    private String loggedInEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,85 +43,47 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        new FirebaseDatabaseHelper().getUserInfo(new FirebaseDatabaseHelper.DataStatus() {
+        inventoryDBHelper = new InventoryDBHelper(MainActivity.this);
+        userDBHelper = new UserDBHelper(MainActivity.this);
+        userDBHelper.deleteAll();
+
+        loggedInEmail = "the.little.smile@hotmail.com";
+        new FirebaseDatabaseHelper("user").getUserInfo(new FirebaseDatabaseHelper.DataStatus() {
             @Override
             public void DataisLoaded(List<User> users, List<String> keys) {
-                Log.d("Check USER", users.get(0).getEmail());
+                User c = users.get(0);
+                User newUser = new User ("1", c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getFavorites());
+
+                userDBHelper.insertData(newUser.getKey(),newUser.getEmail(), newUser.getInventoryStr(), newUser.getShoppingStr(), newUser.getShoppingcheckStr(), newUser.getCompletedStr(), newUser.getFavoriteStr());
+                User testUser = userDBHelper.getThisUser();
+
+                ((GlobalVariables) MainActivity.this.getApplication()).setCurrentUser(newUser);
+                int keycount = 1;
+//                for (User user : users) {
+//                    if (user.getEmail().equalsIgnoreCase(loggedInEmail)) {
+//                        Log.d("Equal", "Founddd");
+//                        currentUser = user;
+//                        ((GlobalVariables) getActivity().getApplication()).setCurrentUser(currentUser);
+//                        ((GlobalVariables) getActivity().getApplication()).setCurrentUserKey(String.valueOf(keycount));
+//                    }
+//                    keycount++;
+//                }
+
             }
 
             @Override
             public void DataIsInserted() {
-
             }
 
             @Override
             public void DataIsUpdated() {
-
             }
 
             @Override
             public void DataIsDeleted() {
-
             }
         });
 
-
-        inventoryDBHelper = new InventoryDBHelper(MainActivity.this);
-        recipeDBHelper = new RecipeDBHelper(MainActivity.this);
-
-        // Save all the recipes to the database
-        String title = "Chickpea, lemon and rocket pesto pasta";
-        String imgpath = "https://img.taste.com.au/MUDQMCwh/w720-h480-cfill-q80/taste/2016/11/chickpea-lemon-and-rocket-pesto-pasta-91973-1.jpeg";
-        String[] tags = {"vegetarian", "capable cook", "family dinner"};
-
-        int protein = 18;
-        int fat = 15;
-        int carb = 66;
-        String time = "20 mins";
-        int serves = 4;
-        ArrayList<Ingredients> ingredients = new ArrayList<>();
-        ingredients.add(new Ingredients("wholegrain spagetti", "300g"));
-        ingredients.add(new Ingredients("chickpeas, rinsed, drained", "400g"));
-        ingredients.add(new Ingredients("baby rocket leaves", "120g"));
-        ingredients.add(new Ingredients("fresh basil leaves", "1/2 cup"));
-
-        String[] instructions = {
-                "Cook the pasta in a large saucepan of boiling salted water following the packet directions or until al dente. Drain, reserving 1/4 cup cooking liquid. Return pasta to saucepan.",
-                "Meanwhile process chickpeas, rocket, basil, pecorino, garlic, lemon juice and water until finely chopped. Season. Add oil in a slow, steady stream until well combined. Reserve 1/4 cup pesto mixture.",
-                "Add the cooking water, peppers and remaining pesto to the pasta. Toss well to combine. Divide the pasta mixture among serving bowls. Top each with a spoonful of reserved pesto. Sprinkle with extra pecorino and micro basil."
-        };
-
-        Recipe recipe = new Recipe(title, imgpath, tags, protein, fat, carb, time, serves, ingredients, instructions);
-
-        recipeDBHelper.deleteAll();
-        recipeDBHelper.insertData(title, imgpath, recipe.getTagsString(), protein, fat, carb, time, serves, recipe.getIngredientsListString(), recipe.getInstructionsString());
-
-
-        // Save all the recipes to the database
-        title = "Meatball Pasta";
-        imgpath = "https://smittenkitchendotcom.files.wordpress.com/2019/03/perfect-spaghetti-and-meatballs.jpg?w=1200";
-//        tags = {"vegetarian", "capable cook", "family dinner"};
-
-        protein = 18;
-        fat = 15;
-        carb = 66;
-        time = "20 mins";
-        serves = 4;
-        ingredients = new ArrayList<>();
-        ingredients.add(new Ingredients("Pasta", "300g"));
-        ingredients.add(new Ingredients("Minced beef", "400g"));
-        ingredients.add(new Ingredients("Ketchup", "120g"));
-        ingredients.add(new Ingredients("Salt", "1/2 cup"));
-//        ingredients.add(new Ingredients("Olive oil", "1/2 cup"));
-
-        String[] instructions2 = {
-                "Cook the pasta in a large saucepan of boiling salted water following the packet directions or until al dente. Drain, reserving 1/4 cup cooking liquid. Return pasta to saucepan.",
-                "Meanwhile process chickpeas, rocket, basil, pecorino, garlic, lemon juice and water until finely chopped. Season. Add oil in a slow, steady stream until well combined. Reserve 1/4 cup pesto mixture.",
-                "Add the cooking water, peppers and remaining pesto to the pasta. Toss well to combine. Divide the pasta mixture among serving bowls. Top each with a spoonful of reserved pesto. Sprinkle with extra pecorino and micro basil."
-        };
-
-        recipe = new Recipe(title, imgpath, tags, protein, fat, carb, time, serves, ingredients, instructions2);
-        recipeDBHelper.insertData(title, imgpath, recipe.getTagsString(), protein, fat, carb, time, serves, recipe.getIngredientsListString(), recipe.getInstructionsString());
 
 
         prefs = getSharedPreferences("au.edu.sydney.comp5216.chef_inprogress", MODE_PRIVATE);

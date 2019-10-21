@@ -53,7 +53,10 @@ public class RecipeDetails extends AppCompatActivity {
         String timeserves = intent.getStringExtra("time") + " | " + String.valueOf(intent.getIntExtra("serves", 0) + " servings");
         time_serves.setText(timeserves);
 
-        ArrayList<Ingredients> ingredients = intent.getParcelableArrayListExtra("ingredients");
+        ArrayList<String> ingredientsList = intent.getStringArrayListExtra("ingredients");
+        Recipe ins = new Recipe();
+        ArrayList<Ingredients> ingredients = ins.setIngredientsString(ingredientsList);
+//        ArrayList<Ingredients> ingredients = intent.getParcelableArrayListExtra("ingredients");
         ingredientsAdapter = new IngredientsAdapter(this, ingredients);
 
         ingredients_lv = (LinearLayout)findViewById(R.id.ingredients_ll);
@@ -63,11 +66,10 @@ public class RecipeDetails extends AppCompatActivity {
         }
 
         // Get instructions
-        String instructionsString = intent.getStringExtra("instructions");
-        Recipe ins = new Recipe();
-        ins.setInstructionsString(instructionsString);
+        ArrayList<String> instructionsList = intent.getStringArrayListExtra("instructions");
+//        ins = new Recipe();
         ArrayList<Ingredients> instructions = new ArrayList<>();
-        instructions = ins.getInstructionsList();
+        instructions = ins.setInstructionsString(instructionsList);
         for(Ingredients i : instructions){
             Log.d("Check arraylist", i.getDescription());
         }

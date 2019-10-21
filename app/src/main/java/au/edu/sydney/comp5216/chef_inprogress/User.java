@@ -1,102 +1,279 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+
+import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ShoppinglistItem;
 
 public class User {
     private String key;
     private String email;
 
     private ArrayList<Inventory> userInventory;
-    private List<String> inventory;
+    private ArrayList<String> inventory;
 
-    private ArrayList<String> userShoppingList;
-    private List<String> shoppinglist;
-    private List<Integer> shoppinglistcheck;
+    private ArrayList<String> shoppinglist;
+    private ArrayList<Integer> shoppinglistcheck;
 
     // Recipes that user have made
-    private ArrayList<String> completedRecipeList;
-    private List<String> completedrecipe;
+    private ArrayList<String> completedrecipe;
+
+    private ArrayList<String> favorites;
+
+    // For local database
+    private String inventoryStr;
+    private String shoppingStr;
+    private String shoppingcheckStr;
+    private String completedStr;
+    private String favoriteStr;
+
+    private static String strSeparator = "__,__";
+
 
     public User(){}
 
-    public User(String email, List<String> inventory, List<String> shoppinglist, List<Integer> shoppinglistcheck, List<String> completedrecipe) {
+    // Constructor for local database
+    public User(String key, String email, String inventoryStr, String shoppingStr, String shoppingcheckStr, String completedStr, String favoriteStr){
+        this.key = key;
+        this.email = email;
+        this.inventoryStr = inventoryStr;
+        this.inventory = convertStringToArray(inventoryStr);
+
+        this.shoppingStr = shoppingStr;
+        this.shoppinglist = convertStringToArray(shoppingStr);
+
+        this.shoppingcheckStr = shoppingcheckStr;
+        this.shoppinglistcheck = convertStringToIntArray(shoppingcheckStr);
+
+//        Gson gson = new Gson();
+//        String str = gson.toJson(this.shoppinglist);
+//
+//        gson = new GsonBuilder().setPrettyPrinting().create();
+//        JsonParser jp = new JsonParser();
+//        JsonElement je = jp.parse(str);
+//        String prettyJsonString = gson.toJson(je);
+//        Log.d("LIST FROM USER", prettyJsonString);
+        this.completedStr = completedStr;
+        this.completedrecipe = convertStringToArray(completedStr);
+        this.favoriteStr = favoriteStr;
+        this.favorites = convertStringToArray(favoriteStr);
+    }
+
+    // Constructor for firebase: when retrieving data
+    public User(String key, String email, ArrayList<String> inventory, ArrayList<String> shoppinglist, ArrayList<Integer> shoppinglistcheck, ArrayList<String> completedrecipe, ArrayList<String> favorites) {
+        this.key = key;
+        this.email = email;
+        this.inventory = inventory;
+        this.inventoryStr = convertArrayToString(inventory);
+
+        this.shoppinglist = shoppinglist;
+        this.shoppinglistcheck = shoppinglistcheck;
+//        this.shoppingStr = getShoppingString();
+        this.shoppingStr = convertArrayToString(shoppinglist);
+        this.shoppingcheckStr = convertIntArrayToString(shoppinglistcheck);
+
+        this.completedrecipe = completedrecipe;
+        this.completedStr = convertArrayToString(completedrecipe);
+
+        this.favorites = favorites;
+        this.favoriteStr = convertArrayToString(favorites);
+    }
+
+    // Constructor for firebase: when posting data
+    public User(String email, ArrayList<String> inventory, ArrayList<String> shoppinglist, ArrayList<Integer> shoppinglistcheck, ArrayList<String> completedrecipe, ArrayList<String> favorites){
         this.email = email;
         this.inventory = inventory;
         this.shoppinglist = shoppinglist;
         this.shoppinglistcheck = shoppinglistcheck;
         this.completedrecipe = completedrecipe;
+        this.favorites = favorites;
     }
 
+
+//    public String getShoppingString(){
+//        ArrayList<ShoppinglistItem> shoppingAL = getShoppingAL();
+//        Gson gson = new Gson();
+//        String str = gson.toJson(shoppingAL);
+//        return str;
+//    }
+//
+//    public ArrayList<ShoppinglistItem> getShoppingAL(){
+//        ArrayList<ShoppinglistItem> shoppingAL = new ArrayList<>();
+//        for(int i=0;i<this.shoppinglist.size();i++){
+//            if(this.shoppinglistcheck.get(i) == 0){
+//                shoppingAL.add(new ShoppinglistItem(false, this.shoppinglist.get(i)));
+//            } else{
+//                shoppingAL.add(new ShoppinglistItem(true, this.shoppinglist.get(i)));
+//            }
+//        }
+//        return shoppingAL;
+//    }
+
+    public static String convertArrayToString(ArrayList<String> array){
+        String str = "";
+        for (int i = 0;i<array.size(); i++) {
+            str = str+array.get(i);
+            // Do not append comma at the end of last element
+            if(i<array.size()-1){
+                str = str+strSeparator;
+            }
+        }
+        return str;
+    }
+
+    public static String convertIntArrayToString(ArrayList<Integer> array){
+        String str = "";
+        for (int i = 0;i<array.size(); i++) {
+            str = str+array.get(i);
+            // Do not append comma at the end of last element
+            if(i<array.size()-1){
+                str = str+strSeparator;
+            }
+        }
+        return str;
+    }
+
+
+    public static ArrayList<String> convertStringToArray(String str){
+        String[] arr = str.split(strSeparator);
+        ArrayList<String> result = new ArrayList<>();
+        for(int i=0;i<arr.length;i++){
+            result.add(arr[i]);
+        }
+        return result;
+    }
+
+    public static ArrayList<Integer> convertStringToIntArray(String str){
+        String[] arr = str.split(strSeparator);
+        ArrayList<Integer> result = new ArrayList<>();
+        for(int i=0;i<arr.length;i++){
+            result.add(Integer.parseInt(arr[i]));
+        }
+        return result;
+    }
+
+
+    /** GETTERS **/
     public String getKey() {
         return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public ArrayList<Inventory> getUserInventory() {
         return userInventory;
+    }
+
+    public ArrayList<String> getInventory() {
+        return inventory;
+    }
+
+    public ArrayList<String> getShoppinglist() {
+        return shoppinglist;
+    }
+
+    public ArrayList<Integer> getShoppinglistcheck() {
+        return shoppinglistcheck;
+    }
+
+    public ArrayList<String> getCompletedrecipe() {
+        return completedrecipe;
+    }
+
+    public ArrayList<String> getFavorites() {
+        return favorites;
+    }
+
+    public String getInventoryStr() {
+        return inventoryStr;
+    }
+
+    public String getShoppingStr() {
+        return shoppingStr;
+    }
+
+    public String getShoppingcheckStr() {
+        return shoppingcheckStr;
+    }
+
+    public String getCompletedStr() {
+        return completedStr;
+    }
+
+    public String getFavoriteStr() {
+        return favoriteStr;
+    }
+
+    public static String getStrSeparator() {
+        return strSeparator;
+    }
+
+
+
+    /** SETTERS **/
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setUserInventory(ArrayList<Inventory> userInventory) {
         this.userInventory = userInventory;
     }
 
-    public List<String> getInventory() {
-        return inventory;
-    }
-
-    public void setInventory(List<String> inventory) {
+    public void setInventory(ArrayList<String> inventory) {
         this.inventory = inventory;
     }
 
-    public ArrayList<String> getUserShoppingList() {
-        return userShoppingList;
-    }
-
-    public void setUserShoppingList(ArrayList<String> userShoppingList) {
-        this.userShoppingList = userShoppingList;
-    }
-
-    public List<String> getShoppingList() {
-        return shoppinglist;
-    }
-
-    public void setShoppinglistcheck(List<Integer> shoppingCheck) {
-        this.shoppinglistcheck = shoppingCheck;
-    }
-
-    public List<Integer> getShoppinglistcheck() {
-        return shoppinglistcheck;
-    }
-
-    public void setShoppingList(List<String> shoppinglist) {
+    public void setShoppinglist(ArrayList<String> shoppinglist) {
         this.shoppinglist = shoppinglist;
     }
 
-    public ArrayList<String> getCompletedRecipeList() {
-        return completedRecipeList;
+    public void setShoppinglistcheck(ArrayList<Integer> shoppinglistcheck) {
+        this.shoppinglistcheck = shoppinglistcheck;
     }
 
-    public void setCompletedRecipeList(ArrayList<String> completedRecipeList) {
-        this.completedRecipeList = completedRecipeList;
-    }
-
-    public List<String> getCompletedrecipe() {
-        return completedrecipe;
-    }
-
-    public void setCompletedrecipe(List<String> completedrecipe) {
+    public void setCompletedrecipe(ArrayList<String> completedrecipe) {
         this.completedrecipe = completedrecipe;
+    }
+
+    public void setFavorites(ArrayList<String> favorites) {
+        this.favorites = favorites;
+    }
+
+    public void setInventoryStr(String inventoryStr) {
+        this.inventoryStr = inventoryStr;
+    }
+
+    public void setShoppingStr(String shoppingStr) {
+        this.shoppingStr = shoppingStr;
+    }
+
+    public void setShoppingcheckStr(String shoppingcheckStr) {
+        this.shoppingcheckStr = shoppingcheckStr;
+    }
+
+    public void setCompletedStr(String completedStr) {
+        this.completedStr = completedStr;
+    }
+
+    public void setFavoriteStr(String favoriteStr) {
+        this.favoriteStr = favoriteStr;
+    }
+
+    public static void setStrSeparator(String strSeparator) {
+        User.strSeparator = strSeparator;
     }
 }

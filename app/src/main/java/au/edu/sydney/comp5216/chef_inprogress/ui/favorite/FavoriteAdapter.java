@@ -18,7 +18,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
 import au.edu.sydney.comp5216.chef_inprogress.R;
+import au.edu.sydney.comp5216.chef_inprogress.User;
+import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
 public class FavoriteAdapter extends BaseAdapter {
 
@@ -52,7 +55,7 @@ public class FavoriteAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         Favorite favorite = getItem(position);
 
         if (convertView == null) {
@@ -63,6 +66,7 @@ public class FavoriteAdapter extends BaseAdapter {
         ImageView pic = (ImageView) convertView.findViewById(R.id.picture);
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView time = (TextView) convertView.findViewById(R.id.time);
+        final ImageView heartBtn = (ImageView) convertView.findViewById(R.id.heart_btn);
 
         // Populate the data into the template view using the data object
         title.setText(favorite.getTitle());
@@ -70,6 +74,37 @@ public class FavoriteAdapter extends BaseAdapter {
 
         new FavoriteAdapter.DownloadImageTask((ImageView) convertView.findViewById(R.id.picture))
                 .execute(favorite.getPic());
+
+        heartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                heartBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                UserDBHelper userDBHelper = new UserDBHelper(context);
+                User c = userDBHelper.getThisUser();
+
+                c.getFavorites().remove(favorites.get(position).getTitle());
+                User currentUser = new User(c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getFavorites());
+
+                // Save favorites to firebase
+                new FirebaseDatabaseHelper("user").updateUser("1",  currentUser, new FirebaseDatabaseHelper.DataStatus() {
+                    @Override
+                    public void DataisLoaded(List<User> users, List<String> keys) {}
+
+                    @Override
+                    public void DataIsInserted() {}
+
+                    @Override
+                    public void DataIsUpdated() {}
+
+                    @Override
+                    public void DataIsDeleted() {}
+                });
+
+                // Save favorites to local db
+                userDBHelper.deleteAll();
+                userDBHelper.insertData(c.getKey(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getFavoriteStr());
+            }
+        });
 
         return convertView;
     }
