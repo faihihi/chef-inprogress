@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         fbUser = mAuth.getCurrentUser();
-        Log.d("IN HOMEEE", fbUser.getEmail());
-
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each

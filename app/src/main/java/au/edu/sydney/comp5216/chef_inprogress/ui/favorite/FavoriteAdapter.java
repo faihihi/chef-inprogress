@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,8 +74,9 @@ public class FavoriteAdapter extends BaseAdapter {
         title.setText(favorite.getTitle());
         time.setText(favorite.getTime());
 
-        new FavoriteAdapter.DownloadImageTask((ImageView) convertView.findViewById(R.id.picture))
-                .execute(favorite.getPic());
+        Glide.with(pic.getContext())
+                .load(favorite.getPic())
+                .into(pic);
 
         heartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,30 +159,5 @@ public class FavoriteAdapter extends BaseAdapter {
             }
         }
     };
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage){
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls){
-            String urldisplay = urls[0];
-            Bitmap foodPic = null;
-
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                foodPic = BitmapFactory.decodeStream(in);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            return foodPic;
-        }
-
-        protected void onPostExecute(Bitmap result){
-            bmImage.setImageBitmap(result);
-        }
-    }
 
 }

@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.muddzdev.styleabletoast.StyleableToast;
@@ -63,7 +64,9 @@ public class RecipeDetails extends AppCompatActivity {
         Intent intent = getIntent();
         recipeTitle = intent.getStringExtra("title");
         title.setText(recipeTitle);
-        new DownloadImageTask((ImageView) image).execute(intent.getStringExtra("image"));
+        Glide.with(image.getContext())
+                .load(intent.getStringExtra("image"))
+                .into(image);
 
         protein.setText(String.valueOf(intent.getIntExtra("protein", 0)) + " g");
         fat.setText(String.valueOf(intent.getIntExtra("fat", 0)) + " g");
@@ -137,36 +140,11 @@ public class RecipeDetails extends AppCompatActivity {
                 userDBHelper.deleteAll();
                 userDBHelper.insertData(c.getKey(), c.getName(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getCompletedDateStr(), c.getFavoriteStr());
 
-                StyleableToast.makeText(getApplicationContext(),"Recipe completion successfully logged", Toast.LENGTH_SHORT).show();
+                StyleableToast.makeText(getApplicationContext(),"That's great!! Check your completion log in Profile : )", Toast.LENGTH_LONG).show();
             }
         });
 
 
-    }
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage){
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls){
-            String urldisplay = urls[0];
-            Bitmap foodPic = null;
-
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                foodPic = BitmapFactory.decodeStream(in);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            return foodPic;
-        }
-
-        protected void onPostExecute(Bitmap result){
-            bmImage.setImageBitmap(result);
-        }
     }
 
 }

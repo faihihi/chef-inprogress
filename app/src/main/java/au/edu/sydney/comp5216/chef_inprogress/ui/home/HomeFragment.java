@@ -1,8 +1,6 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.home;
 
-import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,31 +10,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.google.android.gms.tasks.Tasks;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
 import au.edu.sydney.comp5216.chef_inprogress.FirebaseRecipeDBHelper;
-import au.edu.sydney.comp5216.chef_inprogress.GlobalVariables;
 import au.edu.sydney.comp5216.chef_inprogress.Ingredients;
 import au.edu.sydney.comp5216.chef_inprogress.Inventory;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
-import au.edu.sydney.comp5216.chef_inprogress.MainActivity;
 import au.edu.sydney.comp5216.chef_inprogress.R;
 import au.edu.sydney.comp5216.chef_inprogress.Recipe;
-import au.edu.sydney.comp5216.chef_inprogress.RecipeDBHelper;
 import au.edu.sydney.comp5216.chef_inprogress.User;
 import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 

@@ -37,6 +37,8 @@
             android:drawableLeft="@drawable/ic_search_black_24dp"
             android:drawablePadding="20dp"
             android:hint="Search here"
+            android:maxLines="1"
+            android:imeOptions="actionDone"
             android:textSize="20sp" />
 
     </LinearLayout>

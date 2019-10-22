@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -97,8 +98,9 @@ public class HomeAdapter extends BaseAdapter {
         title.setText(recipe.getTitle());
         time.setText(recipe.getTimeTaken());
 
-        new HomeAdapter.DownloadImageTask((ImageView) convertView.findViewById(R.id.picture))
-                .execute(recipe.getImgpath());
+        Glide.with(pic.getContext())
+                .load(recipe.getImgpath())
+                .into(pic);
 
         heartBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -172,11 +174,9 @@ public class HomeAdapter extends BaseAdapter {
                 }
             }
 
-//            Log.v("list",filteredList.get(0).getTitle());
             FilterResults results = new FilterResults();
             results.values = filteredList;
             results.count = filteredList.size();
-//            Log.v("value",Integer.toString(results.count));
 
             return results;
         }
@@ -195,28 +195,4 @@ public class HomeAdapter extends BaseAdapter {
         }
     };
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage){
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls){
-            String urldisplay = urls[0];
-            Bitmap foodPic = null;
-
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                foodPic = BitmapFactory.decodeStream(in);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            return foodPic;
-        }
-
-        protected void onPostExecute(Bitmap result){
-            bmImage.setImageBitmap(result);
-        }
-    }
 }
