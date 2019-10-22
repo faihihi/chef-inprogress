@@ -129,6 +129,8 @@ public class Login extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
+                            Toast.makeText(Login.this, "Your account has been registered successfully!!",
+                                    Toast.LENGTH_LONG).show();
                             Log.d(TAG, "createUserWithEmail:success");
                             final FirebaseUser user = mAuth.getCurrentUser();
 
@@ -170,8 +172,8 @@ public class Login extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(Login.this, "Authentication failed. Your email or password is incorrect.",
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "Authentication failed. Your email has already existed.",
+                                    Toast.LENGTH_LONG).show();
                             updateUI(null);
                         }
                     }
@@ -190,13 +192,15 @@ public class Login extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
+                            Toast.makeText(Login.this, "Signed in successfully!!",
+                                    Toast.LENGTH_SHORT).show();
                             final FirebaseUser fbUser = mAuth.getCurrentUser();
                             updateUI(fbUser);
 
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(Login.this, "Authentication failed.",
+                            Toast.makeText(Login.this, "Authentication failed. Your email or password may be incorrect.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
