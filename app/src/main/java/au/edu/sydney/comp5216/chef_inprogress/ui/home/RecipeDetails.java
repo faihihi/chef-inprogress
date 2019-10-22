@@ -14,6 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -39,9 +41,11 @@ public class RecipeDetails extends AppCompatActivity {
     private ImageView image;
     private TextView title, protein, fat, carbs, time_serves;
     private LinearLayout ingredients_lv, instructions_lv;
+    private RecyclerView tag_rv;
 
     private IngredientsAdapter ingredientsAdapter;
     private InstructionsAdapter instructionsAdapter;
+    private TagAdapter tagAdapter;
 
     private ExtendedFloatingActionButton complete_btn;
 
@@ -60,6 +64,7 @@ public class RecipeDetails extends AppCompatActivity {
         carbs = (TextView) findViewById(R.id.carbs_value);
         time_serves = (TextView) findViewById(R.id.time_serves);
         complete_btn = (ExtendedFloatingActionButton) findViewById(R.id.complete_btn);
+        tag_rv = (RecyclerView) findViewById(R.id.tag_list);
 
         Intent intent = getIntent();
         recipeTitle = intent.getStringExtra("title");
@@ -67,6 +72,18 @@ public class RecipeDetails extends AppCompatActivity {
         Glide.with(image.getContext())
                 .load(intent.getStringExtra("image"))
                 .into(image);
+
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        tag_rv.setLayoutManager(layoutManager);
+//        tag_rv.setLayoutManager(new LinearLayoutManager(this));
+        ArrayList<String> tagList = intent.getStringArrayListExtra("tags");
+        for(String tag: tagList){
+            Log.d("TAGGGG", tag);
+        }
+        tagAdapter = new TagAdapter(this, tagList);
+        tag_rv.setAdapter(tagAdapter);
+
 
         protein.setText(String.valueOf(intent.getIntExtra("protein", 0)) + " g");
         fat.setText(String.valueOf(intent.getIntExtra("fat", 0)) + " g");
@@ -88,7 +105,6 @@ public class RecipeDetails extends AppCompatActivity {
 
         // Get instructions
         ArrayList<String> instructionsList = intent.getStringArrayListExtra("instructions");
-//        ins = new Recipe();
         ArrayList<Ingredients> instructions = new ArrayList<>();
         instructions = ins.setInstructionsString(instructionsList);
         for(Ingredients i : instructions){

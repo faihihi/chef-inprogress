@@ -104,11 +104,11 @@ public class HomeFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("Check POSITION", String.valueOf(i));
                 Intent intent = new Intent(getActivity().getBaseContext(),
                         RecipeDetails.class);
                 intent.putExtra("title", intentList.get(i).getTitle());
                 intent.putExtra("image", intentList.get(i).getImgpath());
+                intent.putExtra("tags", intentList.get(i).getTags());
                 intent.putExtra("protein", intentList.get(i).getProtein());
                 intent.putExtra("fat", intentList.get(i).getFat());
                 intent.putExtra("carbs", intentList.get(i).getCarb());

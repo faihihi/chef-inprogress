@@ -74,35 +74,6 @@ public class ShoppinglistAdapter extends BaseAdapter {
 
         checkBox.setChecked(isChecked(position));
 
-        textView.setOnLongClickListener(new View.OnLongClickListener() {
-
-
-            @Override
-            public boolean onLongClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Delete the item")
-                        .setMessage("Do you want to delete this item?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d("DELETE", String.valueOf(which));
-                                //remove item from shopping list
-                                //shoppinglistAdapter.notifyDataSetChanged();
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        });
-
-                builder.create().show();
-                return true;
-
-            }
-        });
-
         return convertView;
     }
 }

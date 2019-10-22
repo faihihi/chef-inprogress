@@ -35,7 +35,7 @@ public class Login extends AppCompatActivity {
     private Button btnSignOut;
 
     private LinearLayout loginForm, registrationForm;
-    private Button registerBtn;
+    private Button registerBtn, gobackBtn;
     private TextInputEditText reg_username, reg_email, reg_pw, reg_repw;
 
     private String login_email, login_password;
@@ -57,6 +57,7 @@ public class Login extends AppCompatActivity {
         txtApassword = (TextInputEditText) findViewById(R.id.aPassword);
         btnSignIn = (Button) findViewById(R.id.aSignIn);
         btnReg = (Button) findViewById(R.id.aSignUp);
+        gobackBtn = (Button) findViewById(R.id.back_btn);
 
         loginForm = findViewById(R.id.login_form);
         registrationForm = findViewById(R.id.registration_form);
@@ -81,6 +82,16 @@ public class Login extends AppCompatActivity {
             public void onClick(View view) {
                 loginForm.setVisibility(View.GONE);
                 registrationForm.setVisibility(View.VISIBLE);
+                gobackBtn.setVisibility(View.VISIBLE);
+            }
+        });
+
+        gobackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loginForm.setVisibility(View.VISIBLE);
+                registrationForm.setVisibility(View.GONE);
+                gobackBtn.setVisibility(View.GONE);
             }
         });
 
@@ -159,7 +170,7 @@ public class Login extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(Login.this, "Authentication failed.",
+                            Toast.makeText(Login.this, "Authentication failed. Your email or password is incorrect.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
@@ -242,6 +253,7 @@ public class Login extends AppCompatActivity {
         } else {
             loginForm.setVisibility(View.VISIBLE);
             registrationForm.setVisibility(View.GONE);
+            gobackBtn.setVisibility(View.GONE);
         }
     }
 
