@@ -91,6 +91,7 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
         contentValues.put("USERINVENTORY", 1);
 
         db.update("inventoryItem", contentValues, "ID="+id, null);
+        db.close();
     }
 
     public void saveToUserInventoryWithTitle(String title){

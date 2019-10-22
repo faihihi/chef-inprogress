@@ -82,6 +82,7 @@ public class RecipeDBHelper extends SQLiteOpenHelper {
 
         long result = db.insert("recipe",null,contentValues);
 
+        db.close();
         if(result == -1) return false;
         else return true;
     }
@@ -125,11 +126,13 @@ public class RecipeDBHelper extends SQLiteOpenHelper {
 //            arrayList.add(item);
         }
 
+        db.close();
         return arrayList;
     }
 
     public void deleteAll(){
         SQLiteDatabase db = this.getReadableDatabase();
         db.execSQL("delete from "+ "recipe");
+        db.close();
     }
 }

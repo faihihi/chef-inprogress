@@ -116,12 +116,15 @@ public class RecipeDetails extends AppCompatActivity {
                 User currentUser = new User(c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
 
                 // Save favorites to firebase
-                new FirebaseDatabaseHelper("user").updateUser("1",  currentUser, new FirebaseDatabaseHelper.DataStatus() {
+                new FirebaseDatabaseHelper("user").updateUser(c.getKey(),  currentUser, new FirebaseDatabaseHelper.DataStatus() {
                     @Override
                     public void DataisLoaded(List<User> users, List<String> keys) {}
 
                     @Override
-                    public void DataIsInserted() {}
+                    public void DataIsInserted(User user, String key) {
+
+                    }
+
 
                     @Override
                     public void DataIsUpdated() {}

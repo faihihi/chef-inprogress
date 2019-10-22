@@ -48,7 +48,7 @@ public class FirebaseDatabaseHelper implements Continuation<Void, Task<User>> {
 
     public interface DataStatus{
         void DataisLoaded(List<User> users, List<String> keys);
-        void DataIsInserted();
+        void DataIsInserted(User user, String key);
         void DataIsUpdated();
         void DataIsDeleted();
     }
@@ -79,13 +79,13 @@ public class FirebaseDatabaseHelper implements Continuation<Void, Task<User>> {
         });
     }
 
-    public void addNewUser(User user, final DataStatus dataStatus){
-        String key = mReferenceUser.push().getKey();
+    public void addNewUser(final User user, final DataStatus dataStatus){
+        final String key = mReferenceUser.push().getKey();
         mReferenceUser.child(key).setValue(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        dataStatus.DataIsInserted();
+                        dataStatus.DataIsInserted(user, key);
                     }
                 });
     }

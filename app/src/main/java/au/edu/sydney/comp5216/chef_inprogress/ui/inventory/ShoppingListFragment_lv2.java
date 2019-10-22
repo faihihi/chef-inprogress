@@ -19,10 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -33,6 +31,7 @@ import au.edu.sydney.comp5216.chef_inprogress.GlobalVariables;
 import au.edu.sydney.comp5216.chef_inprogress.R;
 import au.edu.sydney.comp5216.chef_inprogress.Recipe;
 import au.edu.sydney.comp5216.chef_inprogress.User;
+import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 import au.edu.sydney.comp5216.chef_inprogress.ui.add.GridFragment;
 
 public class ShoppingListFragment_lv2 extends Fragment {
@@ -40,16 +39,18 @@ public class ShoppingListFragment_lv2 extends Fragment {
     private ArrayList<ShoppinglistItem> shoppinglist = new ArrayList<>();
     private ShoppinglistAdapter shoppinglistAdapter;
 
-    ListView listView;
-    EditText editText;
-    ImageButton imageButton;
-    Button saveButton;
+    private ListView listView;
+    private EditText editText;
+    private ImageButton imageButton;
+    private Button saveButton;
 
-    User currentUser;
-    String userKey;
-    ArrayList<String> fbShoppingList;
-    ArrayList<Integer> fbShoppingCheck;
-    boolean justUpdated;
+    private ArrayList<String> fbShoppingList;
+    private ArrayList<Integer> fbShoppingCheck;
+
+    private UserDBHelper userDBHelper;
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser fbUser;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_shoppinglist_lv2, container, false);
@@ -59,44 +60,22 @@ public class ShoppingListFragment_lv2 extends Fragment {
         saveButton = view.findViewById(R.id.shopping_save);
         listView = (ListView) view.findViewById(R.id.shoppingListview);
 
-        justUpdated = false;
-
-        new FirebaseDatabaseHelper("user").getUserInfo(new FirebaseDatabaseHelper.DataStatus() {
-            @Override
-            public void DataisLoaded(List<User> users, List<String> keys) {
-                currentUser = users.get(0);
-//                ((GlobalVariables) getActivity().getApplication()).setCurrentUser(currentUser);
-//                ((GlobalVariables) getActivity().getApplication()).setCurrentUserKey("1");
-                fbShoppingList = currentUser.getShoppinglist();
-                fbShoppingCheck = currentUser.getShoppinglistcheck();
-
-                if(!justUpdated){
-                    for(int i=1;i<fbShoppingList.size();i++){
-                        if(fbShoppingCheck.get(i) == 0){ // list false
-                            shoppinglist.add(new ShoppinglistItem(false, fbShoppingList.get(i)));
-                        } else{
-                            shoppinglist.add(new ShoppinglistItem(true, fbShoppingList.get(i)));
-                        }
-                    }
-
-                    shoppinglistAdapter = new ShoppinglistAdapter(getContext(),shoppinglist);
-//                listView.setAdapter(null);
-                    listView.setAdapter(shoppinglistAdapter);
-
-                }
-
-
+        userDBHelper = new UserDBHelper(getContext());
+        User c = userDBHelper.getThisUser();
+        fbShoppingList = c.getShoppinglist();
+        fbShoppingCheck = c.getShoppinglistcheck();
+        for(int i=1;i<fbShoppingList.size();i++){
+            if(fbShoppingCheck.get(i) == 0){ // list false
+                shoppinglist.add(new ShoppinglistItem(false, fbShoppingList.get(i)));
+            } else{
+                shoppinglist.add(new ShoppinglistItem(true, fbShoppingList.get(i)));
             }
+        }
+        shoppinglistAdapter = new ShoppinglistAdapter(getContext(),shoppinglist);
+        listView.setAdapter(shoppinglistAdapter);
 
-            @Override
-            public void DataIsInserted() {}
-
-            @Override
-            public void DataIsUpdated() { }
-
-            @Override
-            public void DataIsDeleted() {}
-        });
+        mAuth = FirebaseAuth.getInstance();
+        fbUser = mAuth.getCurrentUser();
 
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,34 +110,26 @@ public class ShoppingListFragment_lv2 extends Fragment {
                                 ArrayList<ShoppinglistItem> temp = new ArrayList<ShoppinglistItem>(shoppinglist);
                                 for(ShoppinglistItem item : temp){
                                     if(!item.isChecked()){
-//                                        shoppinglist.remove(item);
-//                                        shoppinglistAdapter.notifyDataSetChanged();
-
                                         fbShoppingCheck.add(0);
                                         fbShoppingList.add(item.getName());
                                     }
-
                                 }
                                 shoppinglistAdapter.notifyDataSetChanged();
+
+                                UserDBHelper userDBHelper = new UserDBHelper(getContext());
+                                User c = userDBHelper.getThisUser();
+                                User currentUser = new User(c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
                                 currentUser.setShoppinglist(fbShoppingList);
                                 currentUser.setShoppinglistcheck(fbShoppingCheck);
-                                justUpdated = true;
 
-                                Gson gson = new Gson();
-                                String str = gson.toJson(currentUser);
-
-                                gson = new GsonBuilder().setPrettyPrinting().create();
-                                JsonParser jp = new JsonParser();
-                                JsonElement je = jp.parse(str);
-                                String prettyJsonString = gson.toJson(je);
-                                Log.d("CORRECT FORMAT", prettyJsonString);
-
-                                new FirebaseDatabaseHelper("user").updateUser("1",  currentUser, new FirebaseDatabaseHelper.DataStatus() {
+                                new FirebaseDatabaseHelper("user").updateUser(c.getKey(),  currentUser, new FirebaseDatabaseHelper.DataStatus() {
                                     @Override
                                     public void DataisLoaded(List<User> users, List<String> keys) {}
 
                                     @Override
-                                    public void DataIsInserted() {}
+                                    public void DataIsInserted(User user, String key) {
+
+                                    }
 
                                     @Override
                                     public void DataIsUpdated() {}

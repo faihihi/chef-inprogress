@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -92,6 +93,8 @@ public class UserDBHelper extends SQLiteOpenHelper {
             String completed = cursor.getString(7);
             String completeddate = cursor.getString(8);
             String favorites = cursor.getString(9);
+
+            Log.d("CHECK USER LOCAL", inventory);
 
             user = new User(key, name, email, inventory, shopping, shoppingcheck, completed, completeddate, favorites);
 

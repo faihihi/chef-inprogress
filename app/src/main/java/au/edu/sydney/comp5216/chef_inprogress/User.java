@@ -100,25 +100,12 @@ public class User {
         this.favorites = favorites;
     }
 
+    // Constructor for firebase: when account is first created
+    public User(String name, String email){
+        this.name = name;
+        this.email = email;
+    }
 
-//    public String getShoppingString(){
-//        ArrayList<ShoppinglistItem> shoppingAL = getShoppingAL();
-//        Gson gson = new Gson();
-//        String str = gson.toJson(shoppingAL);
-//        return str;
-//    }
-//
-//    public ArrayList<ShoppinglistItem> getShoppingAL(){
-//        ArrayList<ShoppinglistItem> shoppingAL = new ArrayList<>();
-//        for(int i=0;i<this.shoppinglist.size();i++){
-//            if(this.shoppinglistcheck.get(i) == 0){
-//                shoppingAL.add(new ShoppinglistItem(false, this.shoppinglist.get(i)));
-//            } else{
-//                shoppingAL.add(new ShoppinglistItem(true, this.shoppinglist.get(i)));
-//            }
-//        }
-//        return shoppingAL;
-//    }
 
     public static String convertArrayToString(ArrayList<String> array){
         String str = "";

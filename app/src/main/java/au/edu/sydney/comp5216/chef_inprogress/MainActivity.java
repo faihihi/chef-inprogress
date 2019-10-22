@@ -1,11 +1,14 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -25,13 +28,21 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences prefs = null;
     private InventoryDBHelper inventoryDBHelper;
     private UserDBHelper userDBHelper;
-    private String loggedInEmail;
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser fbUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
+
+        mAuth = FirebaseAuth.getInstance();
+        fbUser = mAuth.getCurrentUser();
+        Log.d("IN HOMEEE", fbUser.getEmail());
+
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -47,12 +58,19 @@ public class MainActivity extends AppCompatActivity {
         userDBHelper = new UserDBHelper(MainActivity.this);
         userDBHelper.deleteAll();
 
-        loggedInEmail = "the.little.smile@hotmail.com";
         new FirebaseDatabaseHelper("user").getUserInfo(new FirebaseDatabaseHelper.DataStatus() {
             @Override
             public void DataisLoaded(List<User> users, List<String> keys) {
-                User c = users.get(0);
-                User newUser = new User ("1", c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
+                int idx = 0;
+                String key = "";
+                for(int i=0;i<users.size();i++){
+                    if(users.get(i).getEmail().equalsIgnoreCase(fbUser.getEmail())){
+                        idx = i;
+                        key = keys.get(i);
+                    }
+                }
+                User c = users.get(idx);
+                User newUser = new User (key, c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
 
                 userDBHelper.insertData(newUser.getKey(), newUser.getName(), newUser.getEmail(), newUser.getInventoryStr(), newUser.getShoppingStr(), newUser.getShoppingcheckStr(), newUser.getCompletedStr(), newUser.getCompletedDateStr(), newUser.getFavoriteStr());
 
@@ -63,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void DataIsInserted() {
+            public void DataIsInserted(User user, String key) {
+
             }
 
             @Override

@@ -43,7 +43,6 @@ import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 public class HomeFragment extends Fragment {
     private InventoryDBHelper inventoryDBHelper;
     private UserDBHelper userDBHelper;
-    private User currentUser;
 
     private ArrayList<Recipe> recipeArrayList, userRecipe, intentList;
     private ArrayList<Inventory> userInventory;
@@ -64,8 +63,12 @@ public class HomeFragment extends Fragment {
         inventoryDBHelper = new InventoryDBHelper(getContext());
         userDBHelper = new UserDBHelper(getContext());
 
+
         userInventory = new ArrayList<>();
         userInventory = inventoryDBHelper.getItemsInUserInventory();
+//        for(Inventory item: userInventory){
+//            Log.d("USER INVENTORYYY", item.getItemName());
+//        }
 
         userRecipe = new ArrayList<>();
         recipeArrayList = new ArrayList<>();
@@ -83,7 +86,8 @@ public class HomeFragment extends Fragment {
                     arrayAdapter.notifyDataSetChanged();
                 }
 
-                userRecipe = getUserRecipe();
+                userRecipe = getUserRecipes();
+//                userRecipe = getUserRecipe();
 
                 if (userRecipe.size() > 0) {
                     arrayAdapter = new HomeAdapter(getContext(), userRecipe);
@@ -151,6 +155,37 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    private ArrayList<Recipe> getUserRecipes(){
+        ArrayList<Recipe> result = new ArrayList<>();
+
+        User thisUser = userDBHelper.getThisUser();
+        ArrayList<String> inventory = thisUser.getInventory();
+
+        for (Recipe recipe : recipeArrayList) {
+            ArrayList<Ingredients> recipeIngredients = new ArrayList<>();
+            recipeIngredients = recipe.setIngredientsString(recipe.getIngredientFB());
+
+            int recipeIngredients_total = recipeIngredients.size();
+            int count = 0;
+            for (Ingredients recipeIng : recipeIngredients) {
+                String[] words = recipeIng.getIngredientsName().split("\\W+");
+                for (int i = 0; i < words.length; i++) {
+                    for(String userIng : inventory){
+                        if (words[i].equalsIgnoreCase(userIng)) {
+                            count++;
+                        }
+                    }
+                }
+            }
+            if (recipeIngredients_total == count) {
+                result.add(recipe);
+            }
+        }
+
+        return result;
+
+    }
+
     private ArrayList<Recipe> getUserRecipe() {
         ArrayList<Recipe> result = new ArrayList<>();
         for (Recipe recipe : recipeArrayList) {
@@ -159,22 +194,12 @@ public class HomeFragment extends Fragment {
 
             int recipeIngredients_total = recipeIngredients.size();
             int count = 0;
-            Log.d("RECIPE NAME", recipe.getTitle());
             for (Ingredients recipeIng : recipeIngredients) {
                 String[] words = recipeIng.getIngredientsName().split("\\W+");
                 for (int i = 0; i < words.length; i++) {
-//                    for(String name: inventoryAL){
-//                        Log.d("ALL INVENTORY", name);
-//                        if (words[i].equalsIgnoreCase(name)) {
-//                            Log.d("In inventory", name);
-//                            count++;
-//                        }
-//                    }
 
                     for (Inventory item : userInventory) {
-                        Log.d("ALL INVENTORY", item.getItemName());
                         if (words[i].equalsIgnoreCase(item.getItemName())) {
-                            Log.d("In inventory", item.getItemName());
                             count++;
                         }
                     }

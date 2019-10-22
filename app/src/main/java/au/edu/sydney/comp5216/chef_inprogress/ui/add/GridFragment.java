@@ -128,6 +128,7 @@ public class GridFragment extends Fragment {
 
                 UserDBHelper userDBHelper = new UserDBHelper(getContext());
                 User c = userDBHelper.getThisUser();
+                Log.d("This key", c.getKey());
 
                 for(Inventory item: selectedItem){
                     displayList.remove(item);
@@ -136,14 +137,19 @@ public class GridFragment extends Fragment {
                     c.getInventory().add(item.getItemName());
                 }
 
+                /// CHECKK KEYYYYYY PROBLEMMM
+                Log.d("KEYYYYYYY", c.getKey());
                 User currentUser = new User(c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
                 // Save items to firebase
-                new FirebaseDatabaseHelper("user").updateUser("1",  currentUser, new FirebaseDatabaseHelper.DataStatus() {
+                new FirebaseDatabaseHelper("user").updateUser(c.getKey(),  currentUser, new FirebaseDatabaseHelper.DataStatus() {
                     @Override
                     public void DataisLoaded(List<User> users, List<String> keys) {}
 
                     @Override
-                    public void DataIsInserted() {}
+                    public void DataIsInserted(User user, String key) {
+
+                    }
+
 
                     @Override
                     public void DataIsUpdated() {}

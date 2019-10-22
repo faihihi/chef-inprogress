@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import au.edu.sydney.comp5216.chef_inprogress.FirebaseRecipeDBHelper;
+import au.edu.sydney.comp5216.chef_inprogress.Login;
 import au.edu.sydney.comp5216.chef_inprogress.R;
 import au.edu.sydney.comp5216.chef_inprogress.Recipe;
 import au.edu.sydney.comp5216.chef_inprogress.User;
@@ -32,10 +36,12 @@ import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 public class ProfileFragment extends Fragment {
     private CalendarView calendarView;
     private TextView username, email, protein, fat, carbs;
+    private ImageView logout;
 
     private UserDBHelper userDBHelper;
 
-    int protein_sum, fat_sum, carbs_sum;
+    private int protein_sum, fat_sum, carbs_sum;
+    private FirebaseAuth mAuth;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -49,6 +55,16 @@ public class ProfileFragment extends Fragment {
         protein = (TextView) root.findViewById(R.id.protein_value);
         fat = (TextView) root.findViewById(R.id.fat_value);
         carbs = (TextView) root.findViewById(R.id.carbs_value);
+
+        mAuth = FirebaseAuth.getInstance();
+        logout = (ImageView) root.findViewById(R.id.logout);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAuth.signOut();
+                startActivity(new Intent(getContext(), Login.class));
+            }
+        });
 
         username.setText(c.getName());
         email.setText(c.getEmail());
@@ -166,27 +182,6 @@ public class ProfileFragment extends Fragment {
 
             } catch (ParseException e) {
                 e.printStackTrace();
-            }
-
-            if(madeOnThisDate){
-                // Query for recipe by title
-//                new FirebaseRecipeDBHelper().getRecipeByTitle(completed.get(idx), new FirebaseRecipeDBHelper.DataStatus() {
-//                    @Override
-//                    public void RecipeisLoaded(List<Recipe> recipes, List<String> keys) {
-//                        for (Recipe recipe : recipes) {
-//                            recipesMadeOnThisDate.add(recipe);
-//                        }
-//
-//                        intent.putExtra("recipes", recipesMadeOnThisDate);
-//                        startActivity(intent);
-//                    }
-//
-//                    @Override
-//                    public void DataIsUpdated() {
-//
-//                    }
-//                });
-
             }
 
             idx++;
