@@ -43,6 +43,7 @@ import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 public class HomeFragment extends Fragment {
     private InventoryDBHelper inventoryDBHelper;
     private UserDBHelper userDBHelper;
+    private User currentUser;
 
     private ArrayList<Recipe> recipeArrayList, userRecipe, intentList;
     private ArrayList<Inventory> userInventory;
@@ -50,8 +51,9 @@ public class HomeFragment extends Fragment {
     HomeAdapter arrayAdapter;
     EditText searchTXT;
     TextView pageTitle;
+    private ListView listView;
 
-    private ArrayList<String> favorites;
+    private ArrayList<String> favorites, inventoryAL;
     private String loggedInEmail;
     boolean finished = false;
 
@@ -61,10 +63,16 @@ public class HomeFragment extends Fragment {
 
         inventoryDBHelper = new InventoryDBHelper(getContext());
         userDBHelper = new UserDBHelper(getContext());
-//        currentUser = userDBHelper.getThisUser();
 
+        userInventory = new ArrayList<>();
+        userInventory = inventoryDBHelper.getItemsInUserInventory();
 
+        userRecipe = new ArrayList<>();
         recipeArrayList = new ArrayList<>();
+
+        arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
+
+        listView = root.findViewById(R.id.recipeList);
 
         // Uncomment after
         new FirebaseRecipeDBHelper().getAllRecipe(new FirebaseRecipeDBHelper.DataStatus() {
@@ -74,6 +82,19 @@ public class HomeFragment extends Fragment {
                     recipeArrayList.add(recipe);
                     arrayAdapter.notifyDataSetChanged();
                 }
+
+                userRecipe = getUserRecipe();
+
+                if (userRecipe.size() > 0) {
+                    arrayAdapter = new HomeAdapter(getContext(), userRecipe);
+                    listView.setAdapter(arrayAdapter);
+                    intentList = userRecipe;
+                    pageTitle.setText("Here's your Recipes");
+                } else {
+                    arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
+                    intentList = recipeArrayList;
+                    pageTitle.setText("Recommended Recipes");
+                }
             }
 
             @Override
@@ -82,26 +103,8 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        userInventory = new ArrayList<>();
-        userInventory = inventoryDBHelper.getItemsInUserInventory();
-
-        userRecipe = new ArrayList<>();
-        userRecipe = getUserRecipe();
-
         pageTitle = (TextView) root.findViewById(R.id.title);
         intentList = new ArrayList<>();
-        // User has ingredients for the recipe in the database
-        if (userRecipe.size() > 0) {
-            arrayAdapter = new HomeAdapter(getContext(), userRecipe);
-            intentList = userRecipe;
-            pageTitle.setText("Here's your Recipes");
-        } else {
-            arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
-            intentList = recipeArrayList;
-            pageTitle.setText("Recommended Recipes");
-        }
-
-        ListView listView = root.findViewById(R.id.recipeList);
 
         listView.setTextFilterEnabled(true);
         listView.setAdapter(arrayAdapter);
@@ -150,18 +153,28 @@ public class HomeFragment extends Fragment {
 
     private ArrayList<Recipe> getUserRecipe() {
         ArrayList<Recipe> result = new ArrayList<>();
-
         for (Recipe recipe : recipeArrayList) {
             ArrayList<Ingredients> recipeIngredients = new ArrayList<>();
-            recipeIngredients = recipe.getIngredientsList();
+            recipeIngredients = recipe.setIngredientsString(recipe.getIngredientFB());
 
             int recipeIngredients_total = recipeIngredients.size();
             int count = 0;
+            Log.d("RECIPE NAME", recipe.getTitle());
             for (Ingredients recipeIng : recipeIngredients) {
                 String[] words = recipeIng.getIngredientsName().split("\\W+");
                 for (int i = 0; i < words.length; i++) {
+//                    for(String name: inventoryAL){
+//                        Log.d("ALL INVENTORY", name);
+//                        if (words[i].equalsIgnoreCase(name)) {
+//                            Log.d("In inventory", name);
+//                            count++;
+//                        }
+//                    }
+
                     for (Inventory item : userInventory) {
+                        Log.d("ALL INVENTORY", item.getItemName());
                         if (words[i].equalsIgnoreCase(item.getItemName())) {
+                            Log.d("In inventory", item.getItemName());
                             count++;
                         }
                     }

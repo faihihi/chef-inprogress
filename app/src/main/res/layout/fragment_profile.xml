@@ -38,10 +38,10 @@
                 android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="180dp"
-                android:textSize="16dp"
+                android:layout_marginLeft="100dp"
+                android:text="First Last"
                 android:textColor="#242126"
-                android:text="First Last"/>
+                android:textSize="16dp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -58,10 +58,10 @@
                 android:id="@+id/email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="180dp"
-                android:textSize="16dp"
+                android:layout_marginLeft="100dp"
+                android:text="fai@hoho.com"
                 android:textColor="#242126"
-                android:text="fai@hoho.com"/>
+                android:textSize="16dp" />
         </RelativeLayout>
 
         <View

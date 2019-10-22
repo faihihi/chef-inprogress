@@ -55,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
                 User newUser = new User ("1", c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
 
                 userDBHelper.insertData(newUser.getKey(), newUser.getName(), newUser.getEmail(), newUser.getInventoryStr(), newUser.getShoppingStr(), newUser.getShoppingcheckStr(), newUser.getCompletedStr(), newUser.getCompletedDateStr(), newUser.getFavoriteStr());
+
+                ArrayList<String> inventory = newUser.getInventory();
+                for(String item: inventory){
+                    inventoryDBHelper.saveToUserInventoryWithTitle(item);
+                }
             }
 
             @Override
@@ -93,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
             inventoryDBHelper.insertData("Tomato", "fruitveg", R.drawable.tomato, 0);
             inventoryDBHelper.insertData("Grapes", "fruitveg", R.drawable.grapes, 0);
             inventoryDBHelper.insertData("Peas", "fruitveg", R.drawable.peas, 0);
+            inventoryDBHelper.insertData("Lime", "fruitveg", R.drawable.lime, 0);
 
             inventoryDBHelper.insertData("Cheese","grocery",R.drawable.cheese,0);
             inventoryDBHelper.insertData("Salt","grocery",R.drawable.salt,0);
@@ -101,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
             inventoryDBHelper.insertData("Bread","grocery",R.drawable.bread,0);
             inventoryDBHelper.insertData("Baguette","grocery",R.drawable.baguette,0);
             inventoryDBHelper.insertData("Pasta","grocery",R.drawable.pasta,0);
+            inventoryDBHelper.insertData("Oil","grocery",R.drawable.olive_oil,0);
+            inventoryDBHelper.insertData("Pepper","grocery",R.drawable.pepper,0);
+            inventoryDBHelper.insertData("Honey","grocery",R.drawable.honey,0);
 
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).commit();

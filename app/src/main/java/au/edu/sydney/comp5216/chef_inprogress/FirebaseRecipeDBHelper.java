@@ -9,6 +9,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -50,6 +51,47 @@ public class FirebaseRecipeDBHelper {
 
             }
         });
+    }
+
+    public void getRecipeByTitle(String title, final DataStatus dataStatus) {
+        Query query = mReferenceUser.orderByChild("title").equalTo(title);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                recipes.clear();
+                List<String> keys = new ArrayList<>();
+                for(DataSnapshot keyNode: dataSnapshot.getChildren()){
+                    keys.add(keyNode.getKey());
+                    Recipe recipe = keyNode.getValue(Recipe.class);
+                    recipes.add(recipe);
+                }
+                // create new call back function and pass sum instead
+                dataStatus.RecipeisLoaded(recipes, keys);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+//        query.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for(DataSnapshot snap : dataSnapshot.getChildren()) {
+//                    String itemName = snap.child("itemName").getValue(String.class);
+//                    if(itemName.toLowerCase().contains(keyword.toLowerCase())) {
+//                        items.add(itemName);
+//                        itemKeys.add(snap.getKey());
+//                    }
+//                }
+//            }
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
 

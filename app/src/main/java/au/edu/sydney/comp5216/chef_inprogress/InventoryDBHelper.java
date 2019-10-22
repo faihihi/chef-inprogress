@@ -93,6 +93,15 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
         db.update("inventoryItem", contentValues, "ID="+id, null);
     }
 
+    public void saveToUserInventoryWithTitle(String title){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("USERINVENTORY", 1);
+
+        db.update("inventoryItem", contentValues, "ITEMNAME='"+title+"'", null);
+    }
+
+
     public void removeFromUserInventory(int id){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();

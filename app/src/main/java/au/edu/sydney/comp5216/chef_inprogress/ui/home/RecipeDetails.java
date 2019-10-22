@@ -20,7 +20,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.muddzdev.styleabletoast.StyleableToast;
 
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
@@ -102,6 +106,13 @@ public class RecipeDetails extends AppCompatActivity {
                 User c = userDBHelper.getThisUser();
 
                 c.getCompletedrecipe().add(recipeTitle);
+
+                long millis=System.currentTimeMillis();
+                Date now = new Date(millis);
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                String strDate = dateFormat.format(now);
+                c.getCompletedDate().add(strDate);
+
                 User currentUser = new User(c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
 
                 // Save favorites to firebase

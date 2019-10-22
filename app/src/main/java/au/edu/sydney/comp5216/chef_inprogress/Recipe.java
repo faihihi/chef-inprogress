@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class Recipe {
+public class Recipe implements Parcelable {
     private int id;
     private String title;
     private String imgpath;
@@ -45,8 +45,37 @@ public class Recipe {
         this.timeTaken = timeTaken;
         this.servings = servings;
         this.ingredientFB = ingredientFB;
+        this.ingredientsList = setIngredientsString(ingredientFB);
         this.instructions = instructions;
     }
+
+    protected Recipe(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        imgpath = in.readString();
+        tags = in.createStringArrayList();
+        protein = in.readInt();
+        fat = in.readInt();
+        carb = in.readInt();
+        timeTaken = in.readString();
+        servings = in.readInt();
+        ingredientFB = in.createStringArrayList();
+        ingredientsList = in.createTypedArrayList(Ingredients.CREATOR);
+        instructions = in.createStringArrayList();
+        userFavorite = in.readByte() != 0;
+    }
+
+    public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
+        @Override
+        public Recipe createFromParcel(Parcel in) {
+            return new Recipe(in);
+        }
+
+        @Override
+        public Recipe[] newArray(int size) {
+            return new Recipe[size];
+        }
+    };
 
     public ArrayList<Ingredients> setInstructionsString(ArrayList<String> instructions) {
         ArrayList<Ingredients> list = new ArrayList<>();
@@ -171,6 +200,28 @@ public class Recipe {
 
     public void setUserFavorite(boolean userFavorite) {
         this.userFavorite = userFavorite;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(title);
+        parcel.writeString(imgpath);
+        parcel.writeStringList(tags);
+        parcel.writeInt(protein);
+        parcel.writeInt(fat);
+        parcel.writeInt(carb);
+        parcel.writeString(timeTaken);
+        parcel.writeInt(servings);
+        parcel.writeStringList(ingredientFB);
+        parcel.writeTypedList(ingredientsList);
+        parcel.writeStringList(instructions);
+        parcel.writeByte((byte) (userFavorite ? 1 : 0));
     }
 }
 

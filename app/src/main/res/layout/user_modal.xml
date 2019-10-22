@@ -27,11 +27,19 @@
             android:textColor="#242126"
             android:textSize="16dp" />
 
+        <TextView
+            android:id="@+id/nodish_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:textSize="14dp"
+            android:text="No dish was made on this day"/>
+
 
         <GridView
             android:id="@+id/recipe_images"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="250dp"
             android:numColumns="2" />
 
             <View
@@ -67,7 +75,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:text="100 g"
+                    android:text="0"
                     android:textColor="#242126"
                     android:textSize="16dp" />
             </RelativeLayout>
@@ -89,7 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text="100 g"
+                android:text="0"
                 android:textColor="#242126"
                 android:textSize="16dp" />
         </RelativeLayout>
@@ -110,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text="100 g"
+                android:text="0"
                 android:textColor="#242126"
                 android:textSize="16dp" />
         </RelativeLayout>
