@@ -83,12 +83,16 @@ public class HomeAdapter extends BaseAdapter {
 
         ArrayList<String> favorites = c.getFavorites();
         boolean checkIfAlreadyFav = false;
-        for(String fav: favorites){
-            if(recipes.get(position).getTitle().equalsIgnoreCase(fav)){
-                // Favorite already exist
-                checkIfAlreadyFav = true;
+
+        if(favorites != null){
+            for(String fav: favorites){
+                if(recipes.get(position).getTitle().equalsIgnoreCase(fav)){
+                    // Favorite already exist
+                    checkIfAlreadyFav = true;
+                }
             }
         }
+
         final ImageView heartBtn = (ImageView) convertView.findViewById(R.id.heart_btn);
         if(checkIfAlreadyFav){
             heartBtn.setImageResource(R.drawable.ic_favorite_black_24dp);

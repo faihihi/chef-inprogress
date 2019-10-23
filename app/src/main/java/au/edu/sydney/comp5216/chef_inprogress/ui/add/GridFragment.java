@@ -128,8 +128,8 @@ public class GridFragment extends Fragment {
 
                 UserDBHelper userDBHelper = new UserDBHelper(getContext());
                 User c = userDBHelper.getThisUser();
-                Log.d("This key", c.getKey());
 
+                Log.d("SELECTEDItem", selectedItem.get(0).getItemName());
                 for(Inventory item: selectedItem){
                     displayList.remove(item);
                     itemsAdapter.notifyDataSetChanged();
@@ -137,8 +137,6 @@ public class GridFragment extends Fragment {
                     c.getInventory().add(item.getItemName());
                 }
 
-                /// CHECKK KEYYYYYY PROBLEMMM
-                Log.d("KEYYYYYYY", c.getKey());
                 User currentUser = new User(c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
                 // Save items to firebase
                 new FirebaseDatabaseHelper("user").updateUser(c.getKey(),  currentUser, new FirebaseDatabaseHelper.DataStatus() {
@@ -146,9 +144,7 @@ public class GridFragment extends Fragment {
                     public void DataisLoaded(List<User> users, List<String> keys) {}
 
                     @Override
-                    public void DataIsInserted(User user, String key) {
-
-                    }
+                    public void DataIsInserted(User user, String key) {}
 
 
                     @Override
@@ -422,10 +418,40 @@ public class GridFragment extends Fragment {
                         })
                         .setPositiveButton("ADD", new DialogInterface.OnClickListener(){
                             public void onClick(DialogInterface dialogInterface, int i){
+
+                                UserDBHelper userDBHelper = new UserDBHelper(getContext());
+                                User c = userDBHelper.getThisUser();
                                 for(Inventory item: scannedListResult){
                                     inventoryDBHelper.saveToUserInventory(item.getId());
+
+                                    displayList.remove(item);
+                                    itemsAdapter.notifyDataSetChanged();
+
+                                    c.getInventory().add(item.getItemName());
                                 }
-                                StyleableToast.makeText(getContext(), "Saved items to Inventory", Toast.LENGTH_SHORT).show();
+
+                                User currentUser = new User(c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
+                                // Save items to firebase
+                                new FirebaseDatabaseHelper("user").updateUser(c.getKey(),  currentUser, new FirebaseDatabaseHelper.DataStatus() {
+                                    @Override
+                                    public void DataisLoaded(List<User> users, List<String> keys) {}
+
+                                    @Override
+                                    public void DataIsInserted(User user, String key) { }
+
+                                    @Override
+                                    public void DataIsUpdated() {
+                                        StyleableToast.makeText(getContext(), "Saved items to Inventory", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void DataIsDeleted() {}
+                                });
+
+                                // Save items to local db
+                                userDBHelper.deleteAll();
+                                userDBHelper.insertData(c.getKey(), c.getName(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getCompletedDateStr(), c.getFavoriteStr());
+
 
                             }
                         })

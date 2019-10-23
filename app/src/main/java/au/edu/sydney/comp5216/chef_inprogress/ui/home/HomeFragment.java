@@ -163,6 +163,9 @@ public class HomeFragment extends Fragment {
 
         User thisUser = userDBHelper.getThisUser();
         ArrayList<String> inventory = thisUser.getInventory();
+        if(inventory == null){
+            return result;
+        }
 
         for (Recipe recipe : recipeArrayList) {
             Log.d("RECIPE NAME", recipe.getTitle());
