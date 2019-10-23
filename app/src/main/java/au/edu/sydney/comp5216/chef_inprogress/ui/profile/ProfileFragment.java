@@ -18,6 +18,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,9 +44,21 @@ public class ProfileFragment extends Fragment {
     private int protein_sum, fat_sum, carbs_sum;
     private FirebaseAuth mAuth;
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser == null){
+            startActivity(new Intent(getContext(), Login.class));
+        }
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        mAuth = FirebaseAuth.getInstance();
 
         userDBHelper = new UserDBHelper(getContext());
         User c = userDBHelper.getThisUser();
@@ -56,7 +69,7 @@ public class ProfileFragment extends Fragment {
         fat = (TextView) root.findViewById(R.id.fat_value);
         carbs = (TextView) root.findViewById(R.id.carbs_value);
 
-        mAuth = FirebaseAuth.getInstance();
+
         logout = (ImageView) root.findViewById(R.id.logout);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
