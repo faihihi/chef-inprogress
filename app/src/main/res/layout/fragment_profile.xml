@@ -93,7 +93,7 @@
             android:layout_marginBottom="15dp"
             android:text="This Month Intake"
             android:textColor="@color/colorPrimary"
-            android:textFontWeight="700"
+            android:textStyle="bold"
             android:textSize="20dp" />
 
         <LinearLayout
@@ -122,7 +122,7 @@
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textAlignment="center"
-                    android:textFontWeight="700"
+                    android:textStyle="bold"
                     android:textSize="16dp" />
 
             </LinearLayout>
@@ -147,7 +147,7 @@
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textAlignment="center"
-                    android:textFontWeight="700"
+                    android:textStyle="bold"
                     android:textSize="16dp" />
 
             </LinearLayout>
@@ -172,7 +172,7 @@
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textAlignment="center"
-                    android:textFontWeight="700"
+                    android:textStyle="bold"
                     android:textSize="16dp" />
 
             </LinearLayout>

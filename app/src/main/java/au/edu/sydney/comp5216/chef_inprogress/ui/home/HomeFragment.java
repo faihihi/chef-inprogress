@@ -1,5 +1,6 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.home;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -79,10 +81,10 @@ public class HomeFragment extends Fragment {
                     intentList = userRecipe;
                     pageTitle.setText("Recipes for you");
                 } else {
-                    toggle.setVisibility(View.INVISIBLE);
+//                    toggle.setVisibility(View.INVISIBLE);
                     arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
                     intentList = recipeArrayList;
-                    pageTitle.setText("Recommended");
+                    pageTitle.setText("All Recipes");
                 }
 
                 toggle.setOnClickListener(new View.OnClickListener() {
@@ -91,9 +93,9 @@ public class HomeFragment extends Fragment {
                         if(pageTitle.getText().equals("Recipes for you")){
                             arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
                             intentList = recipeArrayList;
-                            pageTitle.setText("Recommended");
+                            pageTitle.setText("All Recipes");
                             listView.setAdapter(arrayAdapter);
-                        } else if(pageTitle.getText().equals("Recommended")){
+                        } else if(pageTitle.getText().equals("All Recipes")){
                             arrayAdapter = new HomeAdapter(getContext(), userRecipe);
                             listView.setAdapter(arrayAdapter);
                             intentList = userRecipe;
@@ -193,7 +195,6 @@ public class HomeFragment extends Fragment {
         return result;
 
     }
-
 
 
 }

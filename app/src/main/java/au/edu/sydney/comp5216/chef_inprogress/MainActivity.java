@@ -109,6 +109,10 @@ public class MainActivity extends AppCompatActivity {
             inventoryDBHelper.insertData("Fish","meat",R.drawable.fish,0);
             inventoryDBHelper.insertData("Beef","meat",R.drawable.steak,0);
             inventoryDBHelper.insertData("Chicken","meat",R.drawable.meat,0);
+            inventoryDBHelper.insertData("Salami","meat",R.drawable.salami,0);
+            inventoryDBHelper.insertData("Pork","meat",R.drawable.ham,0);
+            inventoryDBHelper.insertData("Salmon","meat",R.drawable.sashimi,0);
+            inventoryDBHelper.insertData("Fillet","meat",R.drawable.mackerel,0);
 
             inventoryDBHelper.insertData("Apple", "fruitveg", R.drawable.apple, 0);
             inventoryDBHelper.insertData("Carrot", "fruitveg", R.drawable.carrot, 0);
@@ -116,6 +120,14 @@ public class MainActivity extends AppCompatActivity {
             inventoryDBHelper.insertData("Grapes", "fruitveg", R.drawable.grapes, 0);
             inventoryDBHelper.insertData("Peas", "fruitveg", R.drawable.peas, 0);
             inventoryDBHelper.insertData("Lime", "fruitveg", R.drawable.lime, 0);
+            inventoryDBHelper.insertData("Turnip", "fruitveg", R.drawable.turnip, 0);
+            inventoryDBHelper.insertData("Basil", "fruitveg", R.drawable.basil, 0);
+            inventoryDBHelper.insertData("Onion", "fruitveg", R.drawable.onion, 0);
+            inventoryDBHelper.insertData("Ginger", "fruitveg", R.drawable.ginger, 0);
+            inventoryDBHelper.insertData("Garlic", "fruitveg", R.drawable.garlic, 0);
+            inventoryDBHelper.insertData("Lemon", "fruitveg", R.drawable.lemon, 0);
+            inventoryDBHelper.insertData("Broccoli", "fruitveg", R.drawable.broccoli, 0);
+            inventoryDBHelper.insertData("Potatoes", "fruitveg", R.drawable.potatoes, 0);
 
             inventoryDBHelper.insertData("Cheese","grocery",R.drawable.cheese,0);
             inventoryDBHelper.insertData("Salt","grocery",R.drawable.salt,0);
@@ -127,6 +139,14 @@ public class MainActivity extends AppCompatActivity {
             inventoryDBHelper.insertData("Oil","grocery",R.drawable.olive_oil,0);
             inventoryDBHelper.insertData("Pepper","grocery",R.drawable.pepper,0);
             inventoryDBHelper.insertData("Honey","grocery",R.drawable.honey,0);
+            inventoryDBHelper.insertData("Water","grocery",R.drawable.drop,0);
+            inventoryDBHelper.insertData("Soda","grocery",R.drawable.can,0);
+            inventoryDBHelper.insertData("Ice","grocery",R.drawable.ice_box,0);
+            inventoryDBHelper.insertData("Butter","grocery",R.drawable.butter,0);
+            inventoryDBHelper.insertData("Sugar","grocery",R.drawable.sugar,0);
+            inventoryDBHelper.insertData("Egg","grocery",R.drawable.egg,0);
+            inventoryDBHelper.insertData("Flour","grocery",R.drawable.flour,0);
+            inventoryDBHelper.insertData("Cinnamon","grocery",R.drawable.cinnamon,0);
 
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).commit();

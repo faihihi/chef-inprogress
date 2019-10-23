@@ -79,13 +79,16 @@
     </RelativeLayout>
 
 
-    <GridView
-        android:id="@+id/inventoryGridView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/search_bar"
-        android:background="#F9F9F9"
-        android:listSelector="@drawable/gridview_selector"
-        android:numColumns="4" />
+
+        <GridView
+            android:layout_marginBottom="60dp"
+            android:layout_below="@+id/search_bar"
+            android:id="@+id/inventoryGridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F9F9F9"
+            android:listSelector="@drawable/gridview_selector"
+            android:numColumns="4" />
+
 
 </RelativeLayout>

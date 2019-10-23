@@ -6,11 +6,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/topLL"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="horizontal">
+        android:layout_height="100dp">
 
         <TextView
             android:id="@+id/title"
@@ -26,9 +25,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:background="#F9F9F9"
+            android:layout_alignParentRight="true"
             android:drawableTop="@drawable/ic_compare_arrows_black_24dp" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
     <LinearLayout
