@@ -6,18 +6,34 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/title"
+    <LinearLayout
+        android:id="@+id/topLL"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Here's your Recipes"
-        style="@style/FragmentTitle"
-        />
+        android:layout_height="100dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/FragmentTitle"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:text="Recipes for you" />
+
+        <Button
+            android:id="@+id/toggle_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:background="#F9F9F9"
+            android:drawableTop="@drawable/ic_compare_arrows_black_24dp" />
+
+    </LinearLayout>
 
 
     <LinearLayout
         android:id="@+id/search_bar"
-        android:layout_below="@+id/title"
+        android:layout_below="@+id/topLL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
@@ -31,7 +47,6 @@
             android:id="@+id/searchTxt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/title"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="@android:color/transparent"

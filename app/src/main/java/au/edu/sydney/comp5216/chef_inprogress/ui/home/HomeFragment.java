@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,14 +36,11 @@ public class HomeFragment extends Fragment {
     private ArrayList<Recipe> recipeArrayList, userRecipe, intentList;
     private ArrayList<Inventory> userInventory;
 
-    HomeAdapter arrayAdapter;
-    EditText searchTXT;
-    TextView pageTitle;
+    private HomeAdapter arrayAdapter;
+    private EditText searchTXT;
+    private TextView pageTitle;
     private ListView listView;
-
-    private ArrayList<String> favorites, inventoryAL;
-    private String loggedInEmail;
-    boolean finished = false;
+    private Button toggle;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,12 +49,8 @@ public class HomeFragment extends Fragment {
         inventoryDBHelper = new InventoryDBHelper(getContext());
         userDBHelper = new UserDBHelper(getContext());
 
-
         userInventory = new ArrayList<>();
         userInventory = inventoryDBHelper.getItemsInUserInventory();
-//        for(Inventory item: userInventory){
-//            Log.d("USER INVENTORYYY", item.getItemName());
-//        }
 
         userRecipe = new ArrayList<>();
         recipeArrayList = new ArrayList<>();
@@ -64,6 +58,7 @@ public class HomeFragment extends Fragment {
         arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
 
         listView = root.findViewById(R.id.recipeList);
+        toggle = (Button) root.findViewById(R.id.toggle_btn);
 
         // Uncomment after
         new FirebaseRecipeDBHelper().getAllRecipe(new FirebaseRecipeDBHelper.DataStatus() {
@@ -78,15 +73,35 @@ public class HomeFragment extends Fragment {
 //                userRecipe = getUserRecipe();
 
                 if (userRecipe.size() > 0) {
+                    toggle.setVisibility(View.VISIBLE);
                     arrayAdapter = new HomeAdapter(getContext(), userRecipe);
                     listView.setAdapter(arrayAdapter);
                     intentList = userRecipe;
-                    pageTitle.setText("Here's your Recipes");
+                    pageTitle.setText("Recipes for you");
                 } else {
+                    toggle.setVisibility(View.INVISIBLE);
                     arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
                     intentList = recipeArrayList;
-                    pageTitle.setText("Recommended Recipes");
+                    pageTitle.setText("Recommended");
                 }
+
+                toggle.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(pageTitle.getText().equals("Recipes for you")){
+                            arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
+                            intentList = recipeArrayList;
+                            pageTitle.setText("Recommended");
+                            listView.setAdapter(arrayAdapter);
+                        } else if(pageTitle.getText().equals("Recommended")){
+                            arrayAdapter = new HomeAdapter(getContext(), userRecipe);
+                            listView.setAdapter(arrayAdapter);
+                            intentList = userRecipe;
+                            pageTitle.setText("Recipes for you");
+                            listView.setAdapter(arrayAdapter);
+                        }
+                    }
+                });
             }
 
             @Override
@@ -150,6 +165,7 @@ public class HomeFragment extends Fragment {
         ArrayList<String> inventory = thisUser.getInventory();
 
         for (Recipe recipe : recipeArrayList) {
+            Log.d("RECIPE NAME", recipe.getTitle());
             ArrayList<Ingredients> recipeIngredients = new ArrayList<>();
             recipeIngredients = recipe.setIngredientsString(recipe.getIngredientFB());
 
@@ -160,6 +176,7 @@ public class HomeFragment extends Fragment {
                 for (int i = 0; i < words.length; i++) {
                     for(String userIng : inventory){
                         if (words[i].equalsIgnoreCase(userIng)) {
+                            Log.d("MATCH ing", userIng);
                             count++;
                         }
                     }
@@ -173,33 +190,6 @@ public class HomeFragment extends Fragment {
         return result;
 
     }
-
-    private ArrayList<Recipe> getUserRecipe() {
-        ArrayList<Recipe> result = new ArrayList<>();
-        for (Recipe recipe : recipeArrayList) {
-            ArrayList<Ingredients> recipeIngredients = new ArrayList<>();
-            recipeIngredients = recipe.setIngredientsString(recipe.getIngredientFB());
-
-            int recipeIngredients_total = recipeIngredients.size();
-            int count = 0;
-            for (Ingredients recipeIng : recipeIngredients) {
-                String[] words = recipeIng.getIngredientsName().split("\\W+");
-                for (int i = 0; i < words.length; i++) {
-
-                    for (Inventory item : userInventory) {
-                        if (words[i].equalsIgnoreCase(item.getItemName())) {
-                            count++;
-                        }
-                    }
-                }
-            }
-            if (recipeIngredients_total == count) {
-                result.add(recipe);
-            }
-        }
-        return result;
-    }
-
 
 
 

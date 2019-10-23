@@ -52,8 +52,6 @@ public class UserDBHelper extends SQLiteOpenHelper {
      */
     public boolean insertData(String fbkey, String name, String email, String inventory, String shopping, String shoppingcheck, String completed, String completeddate, String favorites){
         SQLiteDatabase db = this.getWritableDatabase();
-//        db.execSQL("DROP TABLE IF EXISTS user");
-//        onCreate(db);
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("FBKEY",fbkey);
@@ -93,8 +91,6 @@ public class UserDBHelper extends SQLiteOpenHelper {
             String completed = cursor.getString(7);
             String completeddate = cursor.getString(8);
             String favorites = cursor.getString(9);
-
-            Log.d("CHECK USER LOCAL", inventory);
 
             user = new User(key, name, email, inventory, shopping, shoppingcheck, completed, completeddate, favorites);
 
