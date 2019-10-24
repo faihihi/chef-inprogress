@@ -2,10 +2,11 @@ package au.edu.sydney.comp5216.chef_inprogress;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+/**
+ * Recipe class
+ */
 public class Recipe implements Parcelable {
     private int id;
     private String title;
@@ -35,6 +36,19 @@ public class Recipe implements Parcelable {
 
     public Recipe(){}
 
+    /**
+     * Default constructor of recipe
+     * @param title
+     * @param imgpath
+     * @param tags
+     * @param protein
+     * @param fat
+     * @param carbs
+     * @param timeTaken
+     * @param servings
+     * @param ingredientFB
+     * @param instructions
+     */
     public Recipe(String title, String imgpath, ArrayList<String> tags, int protein, int fat, int carbs, String timeTaken, int servings, ArrayList<String> ingredientFB, ArrayList<String> instructions) {
         this.title = title;
         this.imgpath = imgpath;
@@ -49,6 +63,10 @@ public class Recipe implements Parcelable {
         this.instructions = instructions;
     }
 
+    /**
+     * Constructor for passing intent as parcel
+     * @param in
+     */
     protected Recipe(Parcel in) {
         id = in.readInt();
         title = in.readString();
@@ -65,6 +83,9 @@ public class Recipe implements Parcelable {
         userFavorite = in.readByte() != 0;
     }
 
+    /**
+     * Parcelable methods
+     */
     public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
         @Override
         public Recipe createFromParcel(Parcel in) {
@@ -77,6 +98,11 @@ public class Recipe implements Parcelable {
         }
     };
 
+    /**
+     * For setting instruction string from arrayList
+     * @param instructions
+     * @return
+     */
     public ArrayList<Ingredients> setInstructionsString(ArrayList<String> instructions) {
         ArrayList<Ingredients> list = new ArrayList<>();
         for(int i=0;i<instructions.size();i++){
@@ -88,6 +114,11 @@ public class Recipe implements Parcelable {
         return list;
     }
 
+    /**
+     * For setting ingredients string from arraylist
+     * @param ingredients
+     * @return
+     */
     public ArrayList<Ingredients> setIngredientsString(ArrayList<String> ingredients){
         ArrayList<Ingredients> list = new ArrayList<>();
         for(String word : ingredients){
@@ -98,6 +129,7 @@ public class Recipe implements Parcelable {
         return list;
     }
 
+    /** GETTERS **/
     public ArrayList<Ingredients> getIngredientsList() {
         return ingredientsList;
     }
@@ -150,6 +182,7 @@ public class Recipe implements Parcelable {
         return userFavorite;
     }
 
+    /** SETTERS **/
     public void setIngredientsList(ArrayList<Ingredients> ingredientsList) {
         this.ingredientsList = ingredientsList;
     }
@@ -202,11 +235,20 @@ public class Recipe implements Parcelable {
         this.userFavorite = userFavorite;
     }
 
+    /**
+     * Parcelable method
+     * @return
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
+    /**
+     * Write to parcel
+     * @param parcel
+     * @param i
+     */
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);

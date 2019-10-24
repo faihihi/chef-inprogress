@@ -1,15 +1,11 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.home;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,13 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.muddzdev.styleabletoast.StyleableToast;
 
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +30,9 @@ import au.edu.sydney.comp5216.chef_inprogress.Recipe;
 import au.edu.sydney.comp5216.chef_inprogress.User;
 import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
+/**
+ * RecipeDetails activity is started when recipe item is clicked
+ */
 public class RecipeDetails extends AppCompatActivity {
     private ImageView image;
     private TextView title, protein, fat, carbs, time_serves;
@@ -51,6 +47,10 @@ public class RecipeDetails extends AppCompatActivity {
 
     private String recipeTitle;
 
+    /**
+     * Create view
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +66,7 @@ public class RecipeDetails extends AppCompatActivity {
         complete_btn = (ExtendedFloatingActionButton) findViewById(R.id.complete_btn);
         tag_rv = (RecyclerView) findViewById(R.id.tag_list);
 
+        // Set title and image
         Intent intent = getIntent();
         recipeTitle = intent.getStringExtra("title");
         title.setText(recipeTitle);
@@ -73,10 +74,10 @@ public class RecipeDetails extends AppCompatActivity {
                 .load(intent.getStringExtra("image"))
                 .into(image);
 
+        // Set tags
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         tag_rv.setLayoutManager(layoutManager);
-//        tag_rv.setLayoutManager(new LinearLayoutManager(this));
         ArrayList<String> tagList = intent.getStringArrayListExtra("tags");
         for(String tag: tagList){
             Log.d("TAGGGG", tag);
@@ -84,14 +85,16 @@ public class RecipeDetails extends AppCompatActivity {
         tagAdapter = new TagAdapter(this, tagList);
         tag_rv.setAdapter(tagAdapter);
 
-
+        // Set nutritions
         protein.setText(String.valueOf(intent.getIntExtra("protein", 0)) + " g");
         fat.setText(String.valueOf(intent.getIntExtra("fat", 0)) + " g");
         carbs.setText(String.valueOf(intent.getIntExtra("carbs", 0)) + " g");
 
+        // Set time taken and serves
         String timeserves = intent.getStringExtra("time") + " | " + String.valueOf(intent.getIntExtra("serves", 0) + " servings");
         time_serves.setText(timeserves);
 
+        // Get ingredients
         ArrayList<String> ingredientsList = intent.getStringArrayListExtra("ingredients");
         Recipe ins = new Recipe();
         ArrayList<Ingredients> ingredients = ins.setIngredientsString(ingredientsList);
@@ -119,6 +122,11 @@ public class RecipeDetails extends AppCompatActivity {
         }
 
         complete_btn.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When "DONE" floating button is clicked
+             * Save the recipe as completed recipe to the user's database
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 UserDBHelper userDBHelper = new UserDBHelper(getApplicationContext());
@@ -126,6 +134,7 @@ public class RecipeDetails extends AppCompatActivity {
 
                 c.getCompletedrecipe().add(recipeTitle);
 
+                // Set date of completion
                 long millis=System.currentTimeMillis();
                 Date now = new Date(millis);
                 DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -134,16 +143,13 @@ public class RecipeDetails extends AppCompatActivity {
 
                 User currentUser = new User(c.getName(), c.getEmail(), c.getInventory(), c.getShoppinglist(), c.getShoppinglistcheck(), c.getCompletedrecipe(), c.getCompletedDate(), c.getFavorites());
 
-                // Save favorites to firebase
+                // Save completed recipe list to firebase
                 new FirebaseDatabaseHelper("user").updateUser(c.getKey(),  currentUser, new FirebaseDatabaseHelper.DataStatus() {
                     @Override
                     public void DataisLoaded(List<User> users, List<String> keys) {}
 
                     @Override
-                    public void DataIsInserted(User user, String key) {
-
-                    }
-
+                    public void DataIsInserted(User user, String key) { }
 
                     @Override
                     public void DataIsUpdated() {}
@@ -152,7 +158,7 @@ public class RecipeDetails extends AppCompatActivity {
                     public void DataIsDeleted() {}
                 });
 
-                // Save favorites to local db
+                // Save completed recipe list to local db
                 userDBHelper.deleteAll();
                 userDBHelper.insertData(c.getKey(), c.getName(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getCompletedDateStr(), c.getFavoriteStr());
 

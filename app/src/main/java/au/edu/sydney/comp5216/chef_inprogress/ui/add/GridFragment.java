@@ -10,13 +10,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -42,6 +38,10 @@ import au.edu.sydney.comp5216.chef_inprogress.R;
 import au.edu.sydney.comp5216.chef_inprogress.User;
 import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
+/**
+ * GridFragment is started when the AddFragment is loaded
+ * This fragment contains all functions related to Gridview in the Adding menu
+ */
 public class GridFragment extends Fragment {
     CategoryPagerAdapter categoryPagerAdapter;
     private MultiChoiceModeListener myModeListener;
@@ -66,6 +66,13 @@ public class GridFragment extends Fragment {
     private static final int RC_OCR_CAPTURE = 9003;
     private static final String TAG = "GridFragment";
 
+    /**
+     * Create view when fragment is started
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -79,13 +86,12 @@ public class GridFragment extends Fragment {
         }
 
         inventoryDBHelper = new InventoryDBHelper(getContext());
-
         inventoryList = new ArrayList<>();
-//        inventoryList = inventoryDBHelper.getItemsNotInUserInventory();
 
         allInventory = new ArrayList<>();
         allInventory = inventoryDBHelper.getAllData();
 
+        // Get all ingredients items that is not in user's inventory
         userDBHelper = new UserDBHelper(getContext());
         User c = userDBHelper.getThisUser();
         ArrayList<String> userItems = c.getInventory();
@@ -120,7 +126,14 @@ public class GridFragment extends Fragment {
         save_fab = (FloatingActionButton) view.findViewById(R.id.save_fab);
         close_fab = (FloatingActionButton) view.findViewById(R.id.close_fab);
 
+        /**
+         * Set on click listener for save floating button
+         */
         save_fab.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When save floating button is clicked, save items to user's inventory
+             * @param view
+             */
             @Override
             public void onClick(View view) {
 
@@ -129,6 +142,7 @@ public class GridFragment extends Fragment {
                 UserDBHelper userDBHelper = new UserDBHelper(getContext());
                 User c = userDBHelper.getThisUser();
 
+                // Update display of items
                 Log.d("SELECTEDItem", selectedItem.get(0).getItemName());
                 for(Inventory item: selectedItem){
                     displayList.remove(item);
@@ -163,6 +177,7 @@ public class GridFragment extends Fragment {
                     inventoryDBHelper.saveToUserInventory(position);
                 }
 
+                // Update display
                 for (int i = 0; i < gridView.getChildCount(); i++) {
                     ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.grid_selector);
                     iv.setVisibility(View.INVISIBLE);
@@ -173,7 +188,14 @@ public class GridFragment extends Fragment {
             }
         });
 
+        /**
+         * Set on click listener for closing button
+         */
         close_fab.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When clicked, destroy multiple selection action mode
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 myModeListener.onDestroyActionMode(currentMode);
@@ -183,11 +205,22 @@ public class GridFragment extends Fragment {
 
         search_bar = (SearchView) view.findViewById(R.id.searchView);
         search_bar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            /**
+             * When query is submitted
+             * @param s
+             * @return
+             */
             @Override
             public boolean onQueryTextSubmit(String s) {
                 return false;
             }
 
+            /**
+             * When query text on search bar is changed
+             * Get filtered list and update display
+             * @param query
+             * @return
+             */
             @Override
             public boolean onQueryTextChange(String query) {
                 ((InventoryAdapter) gridView.getAdapter()).getFilter().filter(query);
@@ -199,6 +232,10 @@ public class GridFragment extends Fragment {
         scan_btn = (ImageView) view.findViewById(R.id.scan_btn);
         scan_btn.setVisibility(View.VISIBLE);
         scan_btn.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When camera button is clicked, start OCR Activity (Google text recognition API)
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 // launch Ocr capture activity.
@@ -210,13 +247,21 @@ public class GridFragment extends Fragment {
             }
         });
 
-
         return view;
     }
 
-    //multi select mode codes
+    /**
+     * Multiple selection mode listener class for Gridview
+     */
     private class MultiChoiceModeListener implements GridView.MultiChoiceModeListener {
+        /**
+         * When ingredients items are long clicked, the listener activate and this function is ran
+         * @param mode
+         * @param menu
+         * @return
+         */
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Update display to restrict user from switching to another category tab
             switch (currentCategory) {
                 case 0:
                     categoryPagerAdapter.removeFragment(new GridFragment(), 2);
@@ -236,6 +281,7 @@ public class GridFragment extends Fragment {
             categoryPagerAdapter.notifyDataSetChanged();
             allfragments = false;
 
+            // Display mode on action bar
             mode.setTitle("Add Ingredients to Inventory");
             mode.setSubtitle("1 item selected");
             currentMode = mode;
@@ -245,15 +291,31 @@ public class GridFragment extends Fragment {
             return true;
         }
 
+        /**
+         * onPrepareActionMode
+         * @param mode
+         * @param menu
+         * @return
+         */
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             currentMode = mode;
             return true;
         }
 
+        /**
+         * When item is clicked
+         * @param mode
+         * @param item
+         * @return
+         */
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             return true;
         }
 
+        /**
+         * When action mode is destroyed, update UI and kill mode
+         * @param mode
+         */
         public void onDestroyActionMode(ActionMode mode) {
             for (int i = 0; i < gridView.getChildCount(); i++) {
                 ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.grid_selector);
@@ -269,6 +331,15 @@ public class GridFragment extends Fragment {
             mode.finish();
         }
 
+        /**
+         * When item is clicked, if the item is not selected, save selected items to list
+         * If item is already selected, remove items from the list
+         * And update UI
+         * @param mode
+         * @param position
+         * @param id
+         * @param checked
+         */
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
             int selectCount = gridView.getCheckedItemCount();
             switch (selectCount) {
@@ -301,6 +372,10 @@ public class GridFragment extends Fragment {
         }
     }
 
+    /**
+     * Function for setting displaying list of each category tab
+     * @param category
+     */
     private void setDisplayList(String category) {
         switch (category) {
             case "meat":
@@ -332,6 +407,9 @@ public class GridFragment extends Fragment {
         }
     }
 
+    /**
+     * Function for setting pager adapter for each category tab
+     */
     private void setAllFragments(){
         if(!allfragments){
             categoryPagerAdapter.removeFragment(new GridFragment(), 0);
@@ -362,6 +440,8 @@ public class GridFragment extends Fragment {
     }
 
     /**
+     * After the scanning recipes with camera activity is finished, this onActivityResult is called
+     *
      * Called when an activity you launched exits, giving you the requestCode
      * you started it with, the resultCode it returned, and any additional
      * data from it.  The <var>resultCode</var> will be
@@ -385,6 +465,7 @@ public class GridFragment extends Fragment {
         if(requestCode == RC_OCR_CAPTURE) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {
+                    // Get scanned strings
                     String text = data.getStringExtra(OcrCaptureActivity.TextBlockObject);
                     scannedListResult = checkIfItemIsAvailable(text);
                     Log.d(TAG, "Text read: " + text);
@@ -396,6 +477,7 @@ public class GridFragment extends Fragment {
 //                        CommonStatusCodes.getStatusCodeString(resultCode)));
             }
 
+            // Find scanned strings that match with ingredients in database
             if(scannedListResult.size() > 0){
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 ArrayList<String> matchedList = new ArrayList<>();
@@ -409,6 +491,7 @@ public class GridFragment extends Fragment {
                     Log.d("Added MATCHED", matchedListArr[i]);
                 }
 
+                // Create dialog box for confirming if user wants to add all these ingredients
                 builder.setTitle("Would you like to add these ingredients to your inventory?")
                         .setItems(matchedListArr, new DialogInterface.OnClickListener() {
                             @Override
@@ -478,6 +561,11 @@ public class GridFragment extends Fragment {
         }
     }
 
+    /**
+     * Function for matching strings of scanned list and ingredients in the database
+     * @param text
+     * @return
+     */
     private ArrayList<Inventory> checkIfItemIsAvailable(String text){
         ArrayList<Inventory> scannedList = new ArrayList<>();
 
@@ -486,8 +574,6 @@ public class GridFragment extends Fragment {
                 if((word.equalsIgnoreCase(item.getItemName())) ||
                         (word.equalsIgnoreCase(item.getItemNameWithS())) ||
                         (word.equalsIgnoreCase(item.getItemNameWithES()))){
-//                    Log.d("ITEM name", item.getItemName());
-//                    Log.d("WORD", word);
                     scannedList.add(item);
                 }
             }

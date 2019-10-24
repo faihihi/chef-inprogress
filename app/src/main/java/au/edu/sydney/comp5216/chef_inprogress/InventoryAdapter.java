@@ -1,11 +1,6 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.text.Layout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +9,12 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Inventory adapter for user's inventory grid view
+ */
 public class InventoryAdapter extends BaseAdapter implements Filterable {
 
     ArrayList<Inventory> inventory;
@@ -28,12 +23,21 @@ public class InventoryAdapter extends BaseAdapter implements Filterable {
 
     private Context context;
 
+    /**
+     * Constructor
+     * @param context
+     * @param items
+     */
     public InventoryAdapter(Context context, ArrayList<Inventory> items) {
         this.context = context;
         this.inventory = items;
         this.filterList = inventory;
     }
 
+    /**
+     * Get count
+     * @return
+     */
     @Override
     public int getCount() {
         try {
@@ -44,16 +48,33 @@ public class InventoryAdapter extends BaseAdapter implements Filterable {
         }
     }
 
+    /**
+     * Get item
+     * @param i
+     * @return
+     */
     @Override
     public Inventory getItem(int i) {
         return inventory.get(i);
     }
 
+    /**
+     * Get item ID
+     * @param i
+     * @return
+     */
     @Override
     public long getItemId(int i) {
         return 0;
     }
 
+    /**
+     * Get view of each ingredient in grid
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
@@ -77,6 +98,10 @@ public class InventoryAdapter extends BaseAdapter implements Filterable {
         return convertView;
     }
 
+    /**
+     * Get filter
+     * @return
+     */
     public Filter getFilter(){
         if(filter == null){
             filter = new CustomFilter();
@@ -85,7 +110,11 @@ public class InventoryAdapter extends BaseAdapter implements Filterable {
     }
 
     private class CustomFilter extends Filter{
-
+        /**
+         * Get filtered list of ingredients that match searched text
+         * @param constraint
+         * @return
+         */
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
 
@@ -98,7 +127,6 @@ public class InventoryAdapter extends BaseAdapter implements Filterable {
                 // Filtering
                 for(int i=0;i< filterList.size();i++){
                     if(filterList.get(i).getItemName().toUpperCase().contains(constraint)){
-//                        Inventory item = new Inventory(filterList.get(i).getId(), filterList.get(i).getItemName(), filterList.get(i).getCategory(), filterList.get(i).getIcon(), filterList.get(i).getUserInventory());
                         filters.add(filterList.get(i));
                     }
                 }
@@ -109,11 +137,14 @@ public class InventoryAdapter extends BaseAdapter implements Filterable {
                 results.count = filterList.size();
                 results.values = filterList;
             }
-
-
             return results;
         }
 
+        /**
+         * Publish result of filtered list
+         * @param constraint
+         * @param results
+         */
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             inventory = (ArrayList<Inventory>) results.values;

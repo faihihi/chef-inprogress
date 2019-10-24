@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
+/**
+ * Inventory DB Helper for managing device local storage of Inventory table
+ */
 public class InventoryDBHelper extends SQLiteOpenHelper {
 
     /**
@@ -85,6 +88,10 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
         return arrayList;
     }
 
+    /**
+     * Save ingredients to user inventory through item's id
+     * @param id
+     */
     public void saveToUserInventory(int id){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -94,6 +101,10 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    /**
+     * Save ingredients to user inventory through item's title
+     * @param title
+     */
     public void saveToUserInventoryWithTitle(String title){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -102,7 +113,10 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
         db.update("inventoryItem", contentValues, "ITEMNAME='"+title+"'", null);
     }
 
-
+    /**
+     * Remove item from user's inventory through item's id
+     * @param id
+     */
     public void removeFromUserInventory(int id){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -111,6 +125,10 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
         db.update("inventoryItem", contentValues, "ID="+id, null);
     }
 
+    /**
+     * Get list of ingredients that are not in user inventory
+     * @return
+     */
     public ArrayList<Inventory> getItemsNotInUserInventory(){
         ArrayList<Inventory> arrayList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -133,6 +151,10 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * Get list of ingredients that exist in user inventory
+     * @return
+     */
     public ArrayList<Inventory> getItemsInUserInventory(){
         ArrayList<Inventory> arrayList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();

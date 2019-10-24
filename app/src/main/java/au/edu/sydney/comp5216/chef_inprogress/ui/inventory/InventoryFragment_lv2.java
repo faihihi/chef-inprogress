@@ -1,14 +1,12 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.inventory;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SearchView;
@@ -25,17 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
-import au.edu.sydney.comp5216.chef_inprogress.FirebaseRecipeDBHelper;
 import au.edu.sydney.comp5216.chef_inprogress.Inventory;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.InventoryDBHelper;
-import au.edu.sydney.comp5216.chef_inprogress.InventoryItemAdapter;
 import au.edu.sydney.comp5216.chef_inprogress.R;
-import au.edu.sydney.comp5216.chef_inprogress.Recipe;
 import au.edu.sydney.comp5216.chef_inprogress.User;
 import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
-import au.edu.sydney.comp5216.chef_inprogress.ui.add.GridFragment;
 
+/**
+ * InventoryFragment_lv2 is loaded when "Inventory" tab is selected
+ */
 public class InventoryFragment_lv2 extends Fragment {
     ArrayList<Inventory> userInventoryList = new ArrayList<>();
     private ArrayList<Inventory> selectedItem, allInventory;
@@ -52,30 +49,40 @@ public class InventoryFragment_lv2 extends Fragment {
     private UserDBHelper userDBHelper;
     private ArrayList<Integer> selectedPositions;
 
+    /**
+     * Create user's inventory list view
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_inventory_lv2,container,false);
 
+        // Get user inventory list
         inventoryDBHelper = new InventoryDBHelper(getContext());
-//        userInventoryList = inventoryDBHelper.getItemsInUserInventory();
         allInventory = new ArrayList<>();
         allInventory = inventoryDBHelper.getAllData();
 
         userDBHelper = new UserDBHelper(getContext());
         User c = userDBHelper.getThisUser();
         ArrayList<String> userItems = c.getInventory();
-        for(Inventory item : allInventory){
-            boolean exist = false;
-            for(String userItem: userItems){
-                if(userItem.equalsIgnoreCase(item.getItemName())){
-                    exist = true;
+        if(userItems != null){
+            for(Inventory item : allInventory){
+                boolean exist = false;
+                for(String userItem: userItems){
+                    if(userItem.equalsIgnoreCase(item.getItemName())){
+                        exist = true;
+                    }
+                }
+                if(exist){
+                    userInventoryList.add(item);
                 }
             }
-            if(exist){
-                userInventoryList.add(item);
-            }
         }
+
 
         // Initialize the custom adapter and connect listView with adapter
         userItemsAdapter = new InventoryAdapter(getContext(), userInventoryList);
@@ -93,6 +100,10 @@ public class InventoryFragment_lv2 extends Fragment {
         close_fab = (FloatingActionButton) view.findViewById(R.id.close_fab);
 
         save_fab.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When save button is clicked, remove selected items from user's inventory list
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 StyleableToast.makeText(getContext(), "Remove from Inventory", Toast.LENGTH_SHORT).show();
@@ -114,9 +125,7 @@ public class InventoryFragment_lv2 extends Fragment {
                     public void DataisLoaded(List<User> users, List<String> keys) {}
 
                     @Override
-                    public void DataIsInserted(User user, String key) {
-
-                    }
+                    public void DataIsInserted(User user, String key) { }
 
                     @Override
                     public void DataIsUpdated() {}
@@ -128,7 +137,6 @@ public class InventoryFragment_lv2 extends Fragment {
                 // Save items to local db
                 userDBHelper.deleteAll();
                 userDBHelper.insertData(c.getKey(), c.getName(), c.getEmail(), c.getInventoryStr(), c.getShoppingStr(), c.getShoppingcheckStr(), c.getCompletedStr(), c.getCompletedDateStr(), c.getFavoriteStr());
-
 
                 for (Integer position : selectedPositions) {
                     inventoryDBHelper.removeFromUserInventory(position);
@@ -144,6 +152,10 @@ public class InventoryFragment_lv2 extends Fragment {
         });
 
         close_fab.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When close button is clicked, kill multiple choice mode listener
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 myModeListener.onDestroyActionMode(currentMode);
@@ -158,6 +170,11 @@ public class InventoryFragment_lv2 extends Fragment {
                 return false;
             }
 
+            /**
+             * When search bar text change, display filtered list
+             * @param query
+             * @return
+             */
             @Override
             public boolean onQueryTextChange(String query) {
                 ((InventoryAdapter) gridView.getAdapter()).getFilter().filter(query);
@@ -170,8 +187,17 @@ public class InventoryFragment_lv2 extends Fragment {
         return view;
     }
 
-    //multi select mode codes
+    /**
+     * MultiChoiceModeListener class for inventory gridview
+     */
     private class MultiChoiceModeListener implements GridView.MultiChoiceModeListener {
+        /**
+         * When item is long clicked, multiple choice mode is triggered
+         * Update UI
+         * @param mode
+         * @param menu
+         * @return
+         */
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.setTitle("Remove Ingredients");
             mode.setSubtitle("1 item selected");
@@ -183,15 +209,31 @@ public class InventoryFragment_lv2 extends Fragment {
             return true;
         }
 
+        /**
+         * onPrepareActionMode
+         * @param mode
+         * @param menu
+         * @return
+         */
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             currentMode = mode;
             return true;
         }
 
+        /**
+         * onActionItemClicked
+         * @param mode
+         * @param item
+         * @return
+         */
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             return true;
         }
 
+        /**
+         * When action mode is destroyed, update UI and make selected list null
+         * @param mode
+         */
         public void onDestroyActionMode(ActionMode mode) {
             for (int i = 0; i < gridView.getChildCount(); i++) {
                 ImageView iv = (ImageView) gridView.getChildAt(i).findViewById(R.id.remove_selector);
@@ -206,6 +248,15 @@ public class InventoryFragment_lv2 extends Fragment {
             mode.finish();
         }
 
+        /**
+         * When item is selected, update UI
+         * If item is already selected, remove the item from the list
+         * If item is not selected, add item to the selected arrayList
+         * @param mode
+         * @param position
+         * @param id
+         * @param checked
+         */
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
             int selectCount = gridView.getCheckedItemCount();
             switch (selectCount) {

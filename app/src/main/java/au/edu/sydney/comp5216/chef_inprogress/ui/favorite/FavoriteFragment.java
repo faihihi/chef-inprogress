@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
 import au.edu.sydney.comp5216.chef_inprogress.FirebaseRecipeDBHelper;
 import au.edu.sydney.comp5216.chef_inprogress.R;
 import au.edu.sydney.comp5216.chef_inprogress.Recipe;
@@ -23,6 +22,9 @@ import au.edu.sydney.comp5216.chef_inprogress.User;
 import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
 
+/**
+ * FavoriteFragment is started when user click on Favorite menu
+ */
 public class FavoriteFragment extends Fragment{
     private UserDBHelper userDBHelper;
 
@@ -33,7 +35,13 @@ public class FavoriteFragment extends Fragment{
 
     EditText searchTXT;
 
-
+    /**
+     * Create view for Favorite Fragment
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -47,6 +55,7 @@ public class FavoriteFragment extends Fragment{
         arrayList = new ArrayList<>();
         favoriteList = new ArrayList<>();
 
+        // Get recipes data from Firebase
         new FirebaseRecipeDBHelper().getAllRecipe(new FirebaseRecipeDBHelper.DataStatus() {
             @Override
             public void RecipeisLoaded(List<Recipe> recipes, List<String> keys) {
@@ -61,24 +70,31 @@ public class FavoriteFragment extends Fragment{
             }
 
             @Override
-            public void DataIsUpdated() {
-
-            }
+            public void DataIsUpdated() { }
         });
 
+        // Set favorite adapter on list view
         arrayAdapter = new FavoriteAdapter(getContext(), arrayList);
         ListView listView = root.findViewById(R.id.favouriteList);
-
         listView.setTextFilterEnabled(true);
-
         listView.setAdapter(arrayAdapter);
 
+        /**
+         * Set text changed listener on search edittext bar
+         */
         searchTXT.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
+            /**
+             * When text is changed, display filtered list
+             * @param s
+             * @param start
+             * @param before
+             * @param count
+             */
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 FavoriteFragment.this.arrayAdapter.getFilter().filter(s);

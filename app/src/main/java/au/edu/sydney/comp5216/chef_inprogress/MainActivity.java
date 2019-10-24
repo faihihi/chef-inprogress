@@ -1,7 +1,5 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
-
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,10 +7,6 @@ import android.util.Log;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -23,6 +17,9 @@ import androidx.navigation.ui.NavigationUI;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * MainActivity is launched after Login activity or when user is already logged in
+ */
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences prefs = null;
@@ -32,7 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser fbUser;
 
-
+    /**
+     * Create buttom navigation view
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
         userDBHelper.deleteAll();
 
         new FirebaseDatabaseHelper("user").getUserInfo(new FirebaseDatabaseHelper.DataStatus() {
+            /**
+             * Get user information from database and save the data to local device
+             * @param users
+             * @param keys
+             */
             @Override
             public void DataisLoaded(List<User> users, List<String> keys) {
                 int idx = 0;
@@ -79,9 +84,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void DataIsInserted(User user, String key) {
-
-            }
+            public void DataIsInserted(User user, String key) {}
 
             @Override
             public void DataIsUpdated() {
@@ -92,11 +95,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
         prefs = getSharedPreferences("au.edu.sydney.comp5216.chef_inprogress", MODE_PRIVATE);
     }
 
+    /**
+     * onResume, when the app is first installed on the device
+     * Save all ingredients name and icons to the device local storage
+     */
     @Override
     protected void onResume() {
         super.onResume();

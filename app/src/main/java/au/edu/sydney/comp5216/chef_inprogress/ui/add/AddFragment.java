@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -15,12 +14,22 @@ import com.google.android.material.tabs.TabLayout;
 import au.edu.sydney.comp5216.chef_inprogress.GlobalVariables;
 import au.edu.sydney.comp5216.chef_inprogress.R;
 
+/**
+ * When user click on Add menu, the AddFragment will be created
+ */
 public class AddFragment extends Fragment {
     CategoryPagerAdapter categoryPagerAdapter;
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
+    /**
+     * Create adding page view
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -35,6 +44,10 @@ public class AddFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Set up pager of the view for different inventory catgeory types
+     * @param viewPager
+     */
     public void setupViewPager(ViewPager viewPager){
         categoryPagerAdapter = new CategoryPagerAdapter(getFragmentManager());
         categoryPagerAdapter = new CategoryPagerAdapter(getChildFragmentManager());

@@ -1,9 +1,6 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.home;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
 import au.edu.sydney.comp5216.chef_inprogress.FirebaseDatabaseHelper;
@@ -31,19 +22,29 @@ import au.edu.sydney.comp5216.chef_inprogress.Recipe;
 import au.edu.sydney.comp5216.chef_inprogress.User;
 import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
+/**
+ * Home adapter for recipe listview
+ */
 public class HomeAdapter extends BaseAdapter {
 
     ArrayList<Recipe> recipes,recipesAll;
     private Context context;
 
+    /**
+     * Constructor
+     * @param mcontext
+     * @param arrayList
+     */
     public HomeAdapter(Context mcontext, ArrayList<Recipe> arrayList){
         context = mcontext;
         recipes = arrayList;
         recipesAll = new ArrayList<>(recipes);
     }
 
-
-
+    /**
+     * Get count
+     * @return
+     */
     @Override
     public int getCount() {
         try {
@@ -54,16 +55,33 @@ public class HomeAdapter extends BaseAdapter {
         }
     }
 
+    /**
+     * Get item
+     * @param i
+     * @return
+     */
     @Override
     public Recipe getItem(int i) {
         return recipes.get(i);
     }
 
+    /**
+     * Get item ID
+     * @param i
+     * @return
+     */
     @Override
     public long getItemId(int i) {
         return 0;
     }
 
+    /**
+     * Get view of each recipe
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final Recipe recipe = getItem(position);
@@ -84,6 +102,7 @@ public class HomeAdapter extends BaseAdapter {
         ArrayList<String> favorites = c.getFavorites();
         boolean checkIfAlreadyFav = false;
 
+        // Setting display for recipe that is marked as favorite
         if(favorites != null){
             for(String fav: favorites){
                 if(recipes.get(position).getTitle().equalsIgnoreCase(fav)){
@@ -107,7 +126,10 @@ public class HomeAdapter extends BaseAdapter {
                 .into(pic);
 
         heartBtn.setOnClickListener(new View.OnClickListener() {
-
+            /**
+             * When heart button is clicked, add recipe to user's favorite list
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 UserDBHelper userDBHelper = new UserDBHelper(context);
@@ -122,6 +144,7 @@ public class HomeAdapter extends BaseAdapter {
                     }
                 }
 
+                // Change heart display
                 if(!checkIfAlreadyFav){
                     heartBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
 
@@ -156,11 +179,20 @@ public class HomeAdapter extends BaseAdapter {
         return convertView;
     }
 
+    /**
+     * Get filture
+     * @return
+     */
     public Filter getFilter(){
         return customFilter;
     }
 
     private Filter customFilter = new Filter() {
+        /**
+         * Function for filtering recipe list when search bar is entered
+         * @param constraint
+         * @return
+         */
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             List<Recipe> filteredList = new ArrayList<>();
@@ -185,6 +217,11 @@ public class HomeAdapter extends BaseAdapter {
             return results;
         }
 
+        /**
+         * Publish filtered list result
+         * @param constraint
+         * @param results
+         */
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             recipes.clear();

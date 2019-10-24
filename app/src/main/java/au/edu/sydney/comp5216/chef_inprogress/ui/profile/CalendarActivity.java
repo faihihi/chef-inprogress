@@ -18,6 +18,9 @@ import au.edu.sydney.comp5216.chef_inprogress.Recipe;
 
 import static android.view.View.VISIBLE;
 
+/**
+ * CalendarActivity is started when date on Calendar view is clicked
+ */
 public class CalendarActivity extends Activity {
     private TextView date, proteins, fat, carbs;
     private GridView gridView;
@@ -28,6 +31,10 @@ public class CalendarActivity extends Activity {
 
     int protein_sum, fat_sum, carbs_sum;
 
+    /**
+     * Create popup modal view of selected date's progress
+     * @param savedInstanceState
+     */
     @Override
     protected  void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -39,6 +46,7 @@ public class CalendarActivity extends Activity {
         int width = dm.widthPixels;
         int height = dm.heightPixels;
 
+        // Set view size
         getWindow().setLayout((int)(width*0.8), (int)(height*.8));
 
         date = findViewById(R.id.date);
@@ -46,6 +54,7 @@ public class CalendarActivity extends Activity {
         fat = findViewById(R.id.fat_intake);
         carbs = findViewById(R.id.carbs_intake);
 
+        // Set date
         Intent intent = getIntent();
         date.setText(intent.getStringExtra("date"));
         recipesMade = intent.getStringArrayListExtra("recipes");
@@ -57,13 +66,18 @@ public class CalendarActivity extends Activity {
         protein_sum = 0;
         fat_sum = 0;
         carbs_sum = 0;
+        // Set recipe list view for showing recipes made on that date
         for(final String recipeTitle: recipesMade){
             // Query for recipe by title
             new FirebaseRecipeDBHelper().getRecipeByTitle(recipeTitle, new FirebaseRecipeDBHelper.DataStatus() {
+                /**
+                 * When recipes finished loading, get nutritions values and set text
+                 * @param recipes
+                 * @param keys
+                 */
                 @Override
                 public void RecipeisLoaded(List<Recipe> recipes, List<String> keys) {
                     for (Recipe recipe : recipes) {
-                        Log.d("recipeeeeeee", recipe.getTitle());
                         recipesList.add(recipe);
                         imageGridAdapter.notifyDataSetChanged();
 
@@ -85,8 +99,8 @@ public class CalendarActivity extends Activity {
 
         }
 
+        // Set display for recipe gridview
         gridView = (GridView) findViewById(R.id.recipe_images);
-
         if(recipesMade.size() > 0){
             gridView.setVisibility(VISIBLE);
             imageGridAdapter = new ImageGridAdapter(this, recipesList);

@@ -12,16 +12,28 @@ import java.util.ArrayList;
 import au.edu.sydney.comp5216.chef_inprogress.Ingredients;
 import au.edu.sydney.comp5216.chef_inprogress.R;
 
+/**
+ * InstructionsAdapter for displaying list of instructions in RecipeDetails
+ */
 public class InstructionsAdapter extends BaseAdapter {
 
     ArrayList<Ingredients> ingredients;
     private Context context;
 
+    /**
+     * Constructor
+     * @param mcontext
+     * @param arrayList
+     */
     public InstructionsAdapter(Context mcontext, ArrayList<Ingredients> arrayList){
         context = mcontext;
         ingredients = arrayList;
     }
 
+    /**
+     * Get count
+     * @return
+     */
     @Override
     public int getCount() {
         try {
@@ -32,16 +44,33 @@ public class InstructionsAdapter extends BaseAdapter {
         }
     }
 
+    /**
+     * Get item
+     * @param i
+     * @return
+     */
     @Override
     public Ingredients getItem(int i) {
         return ingredients.get(i);
     }
 
+    /**
+     * Get item ID
+     * @param i
+     * @return
+     */
     @Override
     public long getItemId(int i) {
         return 0;
     }
 
+    /**
+     * Get view
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Ingredients ingredient = getItem(position);

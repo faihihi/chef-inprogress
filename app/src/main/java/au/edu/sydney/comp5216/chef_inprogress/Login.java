@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +22,9 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Login activity is started when the application is launched
+ */
 public class Login extends AppCompatActivity {
 
     public static final String TAG = "EmailPassword";
@@ -31,8 +33,6 @@ public class Login extends AppCompatActivity {
     private Button btnReg;
     private TextInputEditText txtAemail;
     private TextInputEditText txtApassword;
-
-    private Button btnSignOut;
 
     private LinearLayout loginForm, registrationForm;
     private Button registerBtn, gobackBtn;
@@ -43,9 +43,11 @@ public class Login extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private User newUser;
-    private UserDBHelper userDBHelper;
-    private InventoryDBHelper inventoryDBHelper;
 
+    /**
+     * Create view of login page
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +65,10 @@ public class Login extends AppCompatActivity {
         registrationForm = findViewById(R.id.registration_form);
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
+            /**
+             * If sign in button is clicked, get text and run signin method
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 login_email = txtAemail.getEditableText().toString();
@@ -78,6 +84,10 @@ public class Login extends AppCompatActivity {
         reg_repw = findViewById(R.id.rConfirmation);
 
         btnReg.setOnClickListener(new View.OnClickListener() {
+            /**
+             * If "create new account" button is clicked, update UI to display registration form
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 loginForm.setVisibility(View.GONE);
@@ -87,6 +97,10 @@ public class Login extends AppCompatActivity {
         });
 
         gobackBtn.setOnClickListener(new View.OnClickListener() {
+            /**
+             * If go back button is clicked, update UI to display login form
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 loginForm.setVisibility(View.VISIBLE);
@@ -97,6 +111,10 @@ public class Login extends AppCompatActivity {
 
         registerBtn = findViewById(R.id.rSignUp);
         registerBtn.setOnClickListener(new View.OnClickListener() {
+            /**
+             * If "REGISTER" button is clicked, get all input and run createAccount method
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 reg_emailStr = reg_email.getEditableText().toString();
@@ -109,6 +127,9 @@ public class Login extends AppCompatActivity {
         });
     }
 
+    /**
+     * onStart, check if user is already in session, then update UI
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -117,7 +138,13 @@ public class Login extends AppCompatActivity {
         updateUI(currentUser);
     }
 
-
+    /**
+     * Create new account with Firebase authentication method
+     * @param username
+     * @param email
+     * @param password
+     * @param confirmation
+     */
     private void createAccount(final String username, final String email, String password, String confirmation) {
         if (!validateForm(email, password, confirmation)) {
             return;
@@ -125,6 +152,10 @@ public class Login extends AppCompatActivity {
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
+                    /**
+                     * Triggered when creating user on Firebase task is completed
+                     * @param task
+                     */
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -134,6 +165,7 @@ public class Login extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             final FirebaseUser user = mAuth.getCurrentUser();
 
+                            // Create initial dummy values for user
                             ArrayList<String> inventory = new ArrayList<>();
                             inventory.add("Apple");
                             ArrayList<String> shoppinglist = new ArrayList<>();
@@ -147,12 +179,17 @@ public class Login extends AppCompatActivity {
                             ArrayList<String> favorites = new ArrayList<>();
                             favorites.add("Null");
                             newUser = new User(username, email, inventory, shoppinglist, shoppinglistCheck, completedrecipe, completeddate, favorites);
+
+                            // Add user to Firebase realtime database
                             new FirebaseDatabaseHelper("user").addNewUser(newUser, new FirebaseDatabaseHelper.DataStatus() {
                                 @Override
-                                public void DataisLoaded(List<User> users, List<String> keys) {
+                                public void DataisLoaded(List<User> users, List<String> keys) {}
 
-                                }
-
+                                /**
+                                 * Once data is inserted successfully, update UI to home page
+                                 * @param addUser
+                                 * @param key
+                                 */
                                 @Override
                                 public void DataIsInserted(User addUser, String key) {
                                     Log.d("INSERT SUCCESSFULLY", "TO FIREBASE");
@@ -160,14 +197,10 @@ public class Login extends AppCompatActivity {
                                 }
 
                                 @Override
-                                public void DataIsUpdated() {
-
-                                }
+                                public void DataIsUpdated() {}
 
                                 @Override
-                                public void DataIsDeleted() {
-
-                                }
+                                public void DataIsDeleted() {}
                             });
                         } else {
                             // If sign in fails, display a message to the user.
@@ -180,6 +213,11 @@ public class Login extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Sign in method of Firebase authentication
+     * @param email
+     * @param password
+     */
     private void signIn(final String email, String password) {
         if (!validateLoginForm(email, password)) {
             return;
@@ -187,6 +225,11 @@ public class Login extends AppCompatActivity {
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
+                    /**
+                     * Triggered when sign in task is completed
+                     * Run updateUI method
+                     * @param task
+                     */
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -208,11 +251,14 @@ public class Login extends AppCompatActivity {
                 });
     }
 
-    private void signOut() {
-        mAuth.signOut();
-        updateUI(null);
-    }
-
+    /**
+     * Validate registration input form
+     * Check if all input are filled in, check password length
+     * @param email
+     * @param password
+     * @param confirmPassword
+     * @return
+     */
     private boolean validateForm(String email, String password, String confirmPassword) {
         boolean valid = true;
 
@@ -236,6 +282,12 @@ public class Login extends AppCompatActivity {
         return valid;
     }
 
+    /**
+     * Validate login input form, check if all input are filled in
+     * @param email
+     * @param password
+     * @return
+     */
     private boolean validateLoginForm(String email, String password) {
         boolean valid = true;
 
@@ -251,6 +303,12 @@ public class Login extends AppCompatActivity {
         return valid;
     }
 
+    /**
+     * Update UI based on the user session
+     * If user is in session, start MainActivity
+     * If not, display Login form
+     * @param user
+     */
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             startActivity(new Intent(getApplicationContext(), MainActivity.class));

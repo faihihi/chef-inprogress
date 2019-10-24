@@ -5,10 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
-import java.util.ArrayList;
-
+/**
+ * User DB Helper for dealing with user table on device local storage
+ */
 public class UserDBHelper extends SQLiteOpenHelper {
     /**
      * initialize the databasehelper
@@ -43,10 +43,13 @@ public class UserDBHelper extends SQLiteOpenHelper {
     /**
      * insert new rows when new data generated
      * @param fbkey
+     * @param name
      * @param email
      * @param inventory
      * @param shopping
+     * @param shoppingcheck
      * @param completed
+     * @param completeddate
      * @param favorites
      * @return
      */
@@ -93,13 +96,15 @@ public class UserDBHelper extends SQLiteOpenHelper {
             String favorites = cursor.getString(9);
 
             user = new User(key, name, email, inventory, shopping, shoppingcheck, completed, completeddate, favorites);
-
         }
 
         db.close();
         return user;
     }
 
+    /**
+     * Delete the table
+     */
     public void deleteAll(){
         SQLiteDatabase db = this.getReadableDatabase();
         db.execSQL("delete from "+ "user");

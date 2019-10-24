@@ -1,7 +1,5 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -15,23 +13,36 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Firebase Recipe Database Helper for getting Recipe data from Firebase
+ */
 public class FirebaseRecipeDBHelper {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mReferenceUser;
 
     private List<Recipe> recipes = new ArrayList<>();
 
+    /**
+     * DataStatus interface for setting callback functions
+     */
     public interface DataStatus{
         void RecipeisLoaded(List<Recipe> recipes, List<String> keys);
         void DataIsUpdated();
     }
 
+    /**
+     * Constructor
+     */
     public FirebaseRecipeDBHelper(){
         mDatabase = FirebaseDatabase.getInstance();
         mReferenceUser = mDatabase.getReference("recipe");
     }
 
 
+    /**
+     * Get all recipes from firebase
+     * @param dataStatus
+     */
     public void getAllRecipe(final DataStatus dataStatus){
         mReferenceUser.addValueEventListener(new ValueEventListener() {
             @Override
@@ -53,6 +64,11 @@ public class FirebaseRecipeDBHelper {
         });
     }
 
+    /**
+     * Get recipe by title from firebase
+     * @param title
+     * @param dataStatus
+     */
     public void getRecipeByTitle(String title, final DataStatus dataStatus) {
         Query query = mReferenceUser.orderByChild("title").equalTo(title);
 
@@ -75,26 +91,15 @@ public class FirebaseRecipeDBHelper {
 
             }
         });
-
-//        query.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for(DataSnapshot snap : dataSnapshot.getChildren()) {
-//                    String itemName = snap.child("itemName").getValue(String.class);
-//                    if(itemName.toLowerCase().contains(keyword.toLowerCase())) {
-//                        items.add(itemName);
-//                        itemKeys.add(snap.getKey());
-//                    }
-//                }
-//            }
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
     }
 
 
+    /**
+     * Update recipe on firebase
+     * @param key
+     * @param user
+     * @param dataStatus
+     */
     public void updateRecipe(String key, User user, final DataStatus dataStatus){
         mReferenceUser.child(key).setValue(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

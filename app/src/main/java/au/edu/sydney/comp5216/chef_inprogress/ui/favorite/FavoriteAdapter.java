@@ -1,9 +1,6 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.favorite;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +13,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,17 +21,29 @@ import au.edu.sydney.comp5216.chef_inprogress.R;
 import au.edu.sydney.comp5216.chef_inprogress.User;
 import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
+/**
+ * Adapter for favorite list
+ */
 public class FavoriteAdapter extends BaseAdapter {
 
     ArrayList<Favorite> favorites,favoritesAll;
     private Context context;
 
+    /**
+     * Constructor
+     * @param mcontext
+     * @param arrayList
+     */
     public FavoriteAdapter(Context mcontext, ArrayList<Favorite> arrayList){
         context = mcontext;
         favorites = arrayList;
         favoritesAll = new ArrayList<>(favorites);
     }
 
+    /**
+     * Get count
+     * @return
+     */
     @Override
     public int getCount() {
         try {
@@ -46,16 +54,33 @@ public class FavoriteAdapter extends BaseAdapter {
         }
     }
 
+    /**
+     * Get item
+     * @param position
+     * @return
+     */
     @Override
     public Favorite getItem(int position) {
         return favorites.get(position);
     }
 
+    /**
+     * Get item ID
+     * @param position
+     * @return
+     */
     @Override
     public long getItemId(int position) {
         return 0;
     }
 
+    /**
+     * Get view
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         Favorite favorite = getItem(position);
@@ -78,7 +103,14 @@ public class FavoriteAdapter extends BaseAdapter {
                 .load(favorite.getPic())
                 .into(pic);
 
+        /**
+         * Set on click listener of heart button
+         */
         heartBtn.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When heart button is clicked, remove recipe from favorite list
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 heartBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
@@ -94,10 +126,7 @@ public class FavoriteAdapter extends BaseAdapter {
                     public void DataisLoaded(List<User> users, List<String> keys) {}
 
                     @Override
-                    public void DataIsInserted(User user, String key) {
-
-                    }
-
+                    public void DataIsInserted(User user, String key) {}
 
                     @Override
                     public void DataIsUpdated() {}
@@ -115,17 +144,23 @@ public class FavoriteAdapter extends BaseAdapter {
         return convertView;
     }
 
+    /**
+     * Getting filter
+     * @return
+     */
     public Filter getFilter(){
         return customFilter;
     }
 
+    /**
+     * Function for filtering favorite list from Search query text
+     */
     private Filter customFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             List<Favorite> filteredList = new ArrayList<>();
 
             if(constraint == null || constraint.length() == 0){
-                //filteredList.addAll(arrayList);
                 Toast.makeText(context,"NOTHING FOUND",Toast.LENGTH_LONG);
             }else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
@@ -137,15 +172,18 @@ public class FavoriteAdapter extends BaseAdapter {
                 }
             }
 
-            Log.v("list",filteredList.get(0).getTitle());
             FilterResults results = new FilterResults();
             results.values = filteredList;
             results.count = filteredList.size();
-            Log.v("value",Integer.toString(results.count));
 
             return results;
         }
 
+        /**
+         * Publish result of filtered list
+         * @param constraint
+         * @param results
+         */
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             favorites.clear();

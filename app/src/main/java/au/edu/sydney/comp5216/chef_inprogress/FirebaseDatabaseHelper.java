@@ -1,7 +1,5 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.Continuation;
@@ -18,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+/**
+ * Firebase Database Helper for getting User table
+ */
 public class FirebaseDatabaseHelper implements Continuation<Void, Task<User>> {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mReferenceUser;
@@ -26,6 +27,12 @@ public class FirebaseDatabaseHelper implements Continuation<Void, Task<User>> {
 
     Semaphore semaphore;
 
+    /**
+     * Control task loading order
+     * @param task
+     * @return
+     * @throws Exception
+     */
     @Override
     public Task<User> then(@NonNull Task<Void> task) throws Exception {
         final TaskCompletionSource<User> tcs = new TaskCompletionSource();
@@ -46,18 +53,30 @@ public class FirebaseDatabaseHelper implements Continuation<Void, Task<User>> {
         return tcs.getTask();
     }
 
+    /**
+     * DataStatus interface, setting callback functions
+     */
     public interface DataStatus{
         void DataisLoaded(List<User> users, List<String> keys);
         void DataIsInserted(User user, String key);
         void DataIsUpdated();
         void DataIsDeleted();
     }
+
+    /**
+     * Constructor
+     * @param table
+     */
     public FirebaseDatabaseHelper(String table){
         mDatabase = FirebaseDatabase.getInstance();
         mReferenceUser = mDatabase.getReference(table);
         semaphore = new Semaphore(0);
     }
 
+    /**
+     * Get all user's information from firebase
+     * @param dataStatus
+     */
     public void getUserInfo(final DataStatus dataStatus){
         mReferenceUser.addValueEventListener(new ValueEventListener() {
             @Override
@@ -79,6 +98,11 @@ public class FirebaseDatabaseHelper implements Continuation<Void, Task<User>> {
         });
     }
 
+    /**
+     * Add new user to firebase
+     * @param user
+     * @param dataStatus
+     */
     public void addNewUser(final User user, final DataStatus dataStatus){
         final String key = mReferenceUser.push().getKey();
         mReferenceUser.child(key).setValue(user)
@@ -90,6 +114,12 @@ public class FirebaseDatabaseHelper implements Continuation<Void, Task<User>> {
                 });
     }
 
+    /**
+     * Update user on firebase
+     * @param key
+     * @param user
+     * @param dataStatus
+     */
     public void updateUser(String key, User user, final DataStatus dataStatus){
         mReferenceUser.child(key).setValue(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -100,6 +130,11 @@ public class FirebaseDatabaseHelper implements Continuation<Void, Task<User>> {
                 });
     }
 
+    /**
+     * Delete user on firebase
+     * @param key
+     * @param dataStatus
+     */
     public void deleteUser(String key, final DataStatus dataStatus){
         mReferenceUser.child(key).setValue(null)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

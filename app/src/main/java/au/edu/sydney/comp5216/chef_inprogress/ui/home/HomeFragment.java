@@ -1,6 +1,5 @@
 package au.edu.sydney.comp5216.chef_inprogress.ui.home;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,6 +29,10 @@ import au.edu.sydney.comp5216.chef_inprogress.Recipe;
 import au.edu.sydney.comp5216.chef_inprogress.User;
 import au.edu.sydney.comp5216.chef_inprogress.UserDBHelper;
 
+/**
+ * HomeFragment is started when home menu is selected
+ * It is also a default fragment that is launched when MainActivity run
+ */
 public class HomeFragment extends Fragment {
     private InventoryDBHelper inventoryDBHelper;
     private UserDBHelper userDBHelper;
@@ -44,6 +46,13 @@ public class HomeFragment extends Fragment {
     private ListView listView;
     private Button toggle;
 
+    /**
+     * Create view for Home
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -62,7 +71,7 @@ public class HomeFragment extends Fragment {
         listView = root.findViewById(R.id.recipeList);
         toggle = (Button) root.findViewById(R.id.toggle_btn);
 
-        // Uncomment after
+        // Get all recipes from Firebase
         new FirebaseRecipeDBHelper().getAllRecipe(new FirebaseRecipeDBHelper.DataStatus() {
             @Override
             public void RecipeisLoaded(List<Recipe> recipes, List<String> keys) {
@@ -72,8 +81,9 @@ public class HomeFragment extends Fragment {
                 }
 
                 userRecipe = getUserRecipes();
-//                userRecipe = getUserRecipe();
 
+                // Get recipes that users' ingredients can make
+                // Set display for "Recipes for you" if the recipes exist
                 if (userRecipe.size() > 0) {
                     toggle.setVisibility(View.VISIBLE);
                     arrayAdapter = new HomeAdapter(getContext(), userRecipe);
@@ -81,13 +91,16 @@ public class HomeFragment extends Fragment {
                     intentList = userRecipe;
                     pageTitle.setText("Recipes for you");
                 } else {
-//                    toggle.setVisibility(View.INVISIBLE);
                     arrayAdapter = new HomeAdapter(getContext(), recipeArrayList);
                     intentList = recipeArrayList;
                     pageTitle.setText("All Recipes");
                 }
 
                 toggle.setOnClickListener(new View.OnClickListener() {
+                    /**
+                     * When toggle button is clicked, switch view between Recipe for You and All Recipes
+                     * @param view
+                     */
                     @Override
                     public void onClick(View view) {
                         if(pageTitle.getText().equals("Recipes for you")){
@@ -119,6 +132,13 @@ public class HomeFragment extends Fragment {
         listView.setAdapter(arrayAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            /**
+             * When item from recipe list is clicked, set intent and start RecipeDetails activity
+             * @param adapterView
+             * @param view
+             * @param i
+             * @param l
+             */
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity().getBaseContext(),
@@ -145,6 +165,13 @@ public class HomeFragment extends Fragment {
 
             }
 
+            /**
+             * When search text is changed, display filtered list
+             * @param s
+             * @param start
+             * @param before
+             * @param count
+             */
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 HomeFragment.this.arrayAdapter.getFilter().filter(s);
@@ -160,6 +187,12 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Function for getting user recipes
+     * If user's inventory contains all ingredients needed for that particular recipe
+     * Add that recipe to the user recipe list
+     * @return
+     */
     private ArrayList<Recipe> getUserRecipes(){
         ArrayList<Recipe> result = new ArrayList<>();
 

@@ -1,18 +1,10 @@
 package au.edu.sydney.comp5216.chef_inprogress;
 
-import android.util.Log;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
-import au.edu.sydney.comp5216.chef_inprogress.ui.inventory.ShoppinglistItem;
-
+/**
+ * User class
+ */
 public class User {
     private String key;
     private String email;
@@ -40,10 +32,23 @@ public class User {
 
     private static String strSeparator = "__,__";
 
-
+    /**
+     * void constructor
+     */
     public User(){}
 
-    // Constructor for local database
+    /**
+     * Constructor for dealing with device local database
+     * @param key
+     * @param name
+     * @param email
+     * @param inventoryStr
+     * @param shoppingStr
+     * @param shoppingcheckStr
+     * @param completedStr
+     * @param completedDateStr
+     * @param favoriteStr
+     */
     public User(String key, String name, String email, String inventoryStr, String shoppingStr, String shoppingcheckStr, String completedStr, String completedDateStr, String favoriteStr){
         this.key = key;
         this.name = name;
@@ -65,7 +70,18 @@ public class User {
         this.favorites = convertStringToArray(favoriteStr);
     }
 
-    // Constructor for firebase: when retrieving data
+    /**
+     * Constructor for firebase: when retrieving data
+     * @param key
+     * @param name
+     * @param email
+     * @param inventory
+     * @param shoppinglist
+     * @param shoppinglistcheck
+     * @param completedrecipe
+     * @param completedDate
+     * @param favorites
+     */
     public User(String key, String name, String email, ArrayList<String> inventory, ArrayList<String> shoppinglist, ArrayList<Integer> shoppinglistcheck, ArrayList<String> completedrecipe, ArrayList<String> completedDate, ArrayList<String> favorites) {
         this.key = key;
         this.name = name;
@@ -75,7 +91,6 @@ public class User {
 
         this.shoppinglist = shoppinglist;
         this.shoppinglistcheck = shoppinglistcheck;
-//        this.shoppingStr = getShoppingString();
         this.shoppingStr = convertArrayToString(shoppinglist);
         this.shoppingcheckStr = convertIntArrayToString(shoppinglistcheck);
 
@@ -88,7 +103,17 @@ public class User {
         this.favoriteStr = convertArrayToString(favorites);
     }
 
-    // Constructor for firebase: when posting data
+    /**
+     * Constructor for firebase: when posting data
+     * @param name
+     * @param email
+     * @param inventory
+     * @param shoppinglist
+     * @param shoppinglistcheck
+     * @param completedrecipe
+     * @param completedDate
+     * @param favorites
+     */
     public User(String name, String email, ArrayList<String> inventory, ArrayList<String> shoppinglist, ArrayList<Integer> shoppinglistcheck, ArrayList<String> completedrecipe, ArrayList<String> completedDate, ArrayList<String> favorites){
         this.name = name;
         this.email = email;
@@ -100,13 +125,21 @@ public class User {
         this.favorites = favorites;
     }
 
-    // Constructor for firebase: when account is first created
+    /**
+     * Constructor for firebase: when account is first created
+     * @param name
+     * @param email
+     */
     public User(String name, String email){
         this.name = name;
         this.email = email;
     }
 
-
+    /**
+     * Method of converting array list of String to String
+     * @param array
+     * @return
+     */
     public static String convertArrayToString(ArrayList<String> array){
         String str = "";
         for (int i = 0;i<array.size(); i++) {
@@ -119,6 +152,11 @@ public class User {
         return str;
     }
 
+    /**
+     * Method for converting Array List of Integer to String
+     * @param array
+     * @return
+     */
     public static String convertIntArrayToString(ArrayList<Integer> array){
         String str = "";
         for (int i = 0;i<array.size(); i++) {
@@ -131,7 +169,11 @@ public class User {
         return str;
     }
 
-
+    /**
+     * Method for converting String to ArrayList of String
+     * @param str
+     * @return
+     */
     public static ArrayList<String> convertStringToArray(String str){
         String[] arr = str.split(strSeparator);
         ArrayList<String> result = new ArrayList<>();
@@ -141,6 +183,11 @@ public class User {
         return result;
     }
 
+    /**
+     * Method for converting String to ArrayList of Integer
+     * @param str
+     * @return
+     */
     public static ArrayList<Integer> convertStringToIntArray(String str){
         String[] arr = str.split(strSeparator);
         ArrayList<Integer> result = new ArrayList<>();
